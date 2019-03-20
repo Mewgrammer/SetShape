@@ -1,6 +1,8 @@
 {
   "name": "setShape",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular",
   "id": "f9d4f2cd"
 }

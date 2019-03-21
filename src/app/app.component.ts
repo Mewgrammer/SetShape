@@ -5,28 +5,34 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html'
+  selector: "app-root",
+  templateUrl: "app.component.html"
 })
 export class AppComponent {
   public appPages = [
     {
-      title: 'Home',
-      url: '/home',
-      icon: 'home'
+      title: "Home",
+      url: "/home",
+      icon: "home"
     },
     {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
+      title: "Trainings",
+      url: "/training-plan",
+      icon: "walk"
+    },
+    {
+      title: "Statistics",
+      url: "/statistics",
+      icon: "trending-up"
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: "contact"
     }
   ];
 
-  constructor(
-    private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar
-  ) {
+  constructor(private platform: Platform, private splashScreen: SplashScreen, private statusBar: StatusBar) {
     this.initializeApp();
   }
 

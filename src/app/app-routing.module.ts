@@ -9,12 +9,15 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: './home/home.module#HomePageModule'
+    loadChildren: './pages/home/home.module#HomePageModule'
   },
   {
     path: 'list',
-    loadChildren: './list/list.module#ListPageModule'
-  }
+    loadChildren: './pages/list/list.module#ListPageModule'
+  },  { path: 'profile', loadChildren: './pages/profile/profile.module#ProfilePageModule' },
+  { path: 'statistics', loadChildren: './pages/statistics/statistics.module#StatisticsPageModule' },
+  { path: 'training-plan', loadChildren: './pages/training-plan/training-plan.module#TrainingPlanPageModule' }
+
 ];
 
 @NgModule({

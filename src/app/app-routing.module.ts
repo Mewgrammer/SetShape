@@ -16,7 +16,8 @@ const routes: Routes = [
     loadChildren: './pages/list/list.module#ListPageModule'
   },  { path: 'profile', loadChildren: './pages/profile/profile.module#ProfilePageModule' },
   { path: 'statistics', loadChildren: './pages/statistics/statistics.module#StatisticsPageModule' },
-  { path: 'training-plan', loadChildren: './pages/training-plan/training-plan.module#TrainingPlanPageModule' }
+  { path: 'training-plan', loadChildren: './pages/training-plan/training-plan.module#TrainingPlanPageModule' },
+  { path: 'about', loadChildren: './pages/about/about.module#AboutPageModule' }
 
 ];
 

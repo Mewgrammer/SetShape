@@ -4,16 +4,16 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Trainings
+      Training
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  Trainings Page Works!
+  <router-outlet></router-outlet>
   <ion-tabs>
     <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="schedule">
+      <ion-tab-button tab="trainings">
         <ion-icon name="calendar"></ion-icon>
         <ion-label>Schedule</ion-label>
       </ion-tab-button>
@@ -22,8 +22,13 @@
         <ion-icon name="list"></ion-icon>
         <ion-label>History</ion-label>
       </ion-tab-button>
+
+      <ion-tab-button tab="timer">
+        <ion-icon name="time"></ion-icon>
+        <ion-label>Timer</ion-label>
+      </ion-tab-button>
   
-      <ion-tab-button tab="map">
+      <ion-tab-button tab="counter">
         <ion-icon name="add"></ion-icon>
         <ion-label>Counter</ion-label>
       </ion-tab-button>

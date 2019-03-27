@@ -34,6 +34,16 @@ export class AppComponent {
       title: "About",
       url: "/about",
       icon: "information-circle"
+    },
+    {
+      title: "Login",
+      url: "/login",
+      icon: "information-circle"
+    },
+    {
+      title: "Register",
+      url: "/register",
+      icon: "information-circle"
     }
   ];
 

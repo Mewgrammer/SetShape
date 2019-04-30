@@ -5,6 +5,7 @@ import {ITrainingDay, ITrainingPlan} from '../../resources/models/training-plan'
 import {TestData} from '../../resources/testdata';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
+import {Pro} from '@ionic/pro';
 
 @Component({
   selector: 'app-home-page',
@@ -19,9 +20,15 @@ export class HomePage implements OnInit{
   constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
   ngOnInit() {
+    this.getVersion();
     this.trainingPlan = this._dataService.CurrentTrainingPlan;
     if(this.trainingPlan != null)
       this.trainingDays = this.trainingPlan.days;
+  }
+
+  public async getVersion() {
+    const version =  await Pro.deploy.getCurrentVersion();
+    console.log("Version:", version);
   }
 
   public async navigateToAddPage() {

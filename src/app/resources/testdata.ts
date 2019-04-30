@@ -1,4 +1,4 @@
-import {ITrainingPlan} from './models/training-plan';
+import {ITrainingPlan, TrainingDay, TrainingPlan} from './models/training-plan';
 import {EWorkoutType, IWorkout, IWorkoutHistoryItem} from './models/workout';
 
 const workoutBankDruecken: IWorkout = {
@@ -27,6 +27,16 @@ const workoutTrizeps: IWorkout = {
     sets: 5,
     weight: 7,
 };
+
+const workoutDips: IWorkout = {
+    id: 4,
+    type: EWorkoutType.Dips,
+    name: "Dips",
+    repetitions: 10,
+    sets: 4,
+    weight: 3,
+};
+
 
 
 
@@ -57,36 +67,12 @@ export const testHistory: IWorkoutHistoryItem[] = [
     }
 ];
 
-export const testPlan: ITrainingPlan = {
-    id: 0,
-    name: "Test Plan",
-    days: [
-        {
-            id: 0,
-            name: "Test Tag 1",
-            workouts: [
-                workoutBankDruecken,
-                workoutButterfly,
-            ]
-        },
-        {
-            id: 1,
-            name: "Test Tag 2",
-            workouts: [
-                workoutButterfly,
-                workoutTrizeps
-            ]
-        },
-        {
-            id:2,
-            name: "Test Tag 3",
-            workouts: [
-                workoutBankDruecken,
-                workoutTrizeps
-            ]
-        }
-    ]
-};
+export const testPlan: ITrainingPlan = new TrainingPlan("Test Plan", [
+    new TrainingDay("Test Tag 1", [workoutBankDruecken, workoutButterfly]),
+    new TrainingDay("Test Tag 2", [workoutTrizeps, workoutButterfly]),
+    new TrainingDay("Test Tag 3", [workoutBankDruecken, workoutDips]),
+    new TrainingDay("Test Tag 4", [workoutButterfly, workoutTrizeps]),
+]);
 
 export class TestData {
     public static plan: ITrainingPlan = testPlan;
@@ -95,6 +81,7 @@ export class TestData {
         workoutButterfly,
         workoutTrizeps,
         workoutBankDruecken,
+        workoutDips
     ];
 }
 

@@ -4,11 +4,32 @@
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>
-      Add Training Day
+      Trainingstag Hinzufügen
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content color="dark">
-  Needs to be added
+  <ion-card color="dark">
+    <ion-card-header>
+      <ion-card-title>
+        Neuer Trainingstag
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content style="font-size: 18px;">
+      <ion-item color="dark">
+        <ion-label position="stacked">Name</ion-label>
+        <ion-input type="text" [(ngModel)]="name"></ion-input>
+      </ion-item>
+      <ion-item color="dark">
+          <ion-label position="stacked">Übungen</ion-label>
+          <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100">
+            <ion-select-option [value]="type" *ngFor="let type of WorkoutTypes">
+              {{WorkoutTypeEnum[type]}}
+            </ion-select-option>
+          </ion-select>
+      </ion-item>
+      <ion-button color="warning" (click)="onAddDayClick()">Tag hinzufügen</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

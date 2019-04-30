@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {ITrainingPlan} from '../resources/models/training-plan';
+import {ITrainingDay, ITrainingPlan} from '../resources/models/training-plan';
 import {TestData} from '../resources/testdata';
 import {IWorkout, IWorkoutHistoryItem} from '../resources/models/workout';
 
@@ -34,6 +34,10 @@ export class DataService {
     this._currentTrainingPlan = this._trainingPlans[0];
     this._workoutHistory = TestData.history;
     this._workouts = TestData.workouts;
+  }
+
+  public addDayToCurrentTrainingPlan(day: ITrainingDay) {
+    this._currentTrainingPlan.days.push(day);
   }
 
   public createTrainingPlan(plan: ITrainingPlan) {

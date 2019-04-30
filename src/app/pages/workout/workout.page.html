@@ -15,18 +15,17 @@
 </ion-header>
 <ion-content color="dark">
   <ion-card color="dark">
-    <ion-card-header color="dark">
-      <ion-card-title>{{workout.name}}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content style="font-size: 24px;">
+    <ion-card-content style="font-size: 18px;">
       <table class="table-sm table-borderless table-dark bg-ionic-dark">
         <tbody>
           <tr>
             <td>
-              Sätze
+              <span class="text-dark-contrast">
+                  Sätze
+              </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.sets" class="w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="workout.sets" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning" (click)="onDecrementSets()">-</ion-button>
@@ -37,10 +36,12 @@
           </tr>
           <tr>
             <td>
-              Wiederholungen
+              <span  class="text-dark-contrast">
+                  Wiederholungen
+              </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.repetitions" class="w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="workout.repetitions" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning" (click)="OnDecrementRepetitions()">-</ion-button>
@@ -51,10 +52,12 @@
           </tr>
           <tr>
             <td>
-              Gewicht
+              <span  class="text-dark-contrast">
+                  Gewicht
+              </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.weight"  class="w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="workout.weight"  class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning" (click)="onDecrementWeight()">-</ion-button>

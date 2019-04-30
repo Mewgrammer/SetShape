@@ -1,9 +1,9 @@
 
 export enum EWorkoutType {
-    BankDruecken = 0,
-    Butterfly =  1,
-    Dips = 2,
-    TrizepsCurls = 3,
+    BankDruecken = 1,
+    Butterfly =  2,
+    Dips = 3,
+    TrizepsCurls = 4,
 }
 
 export interface IWorkout {

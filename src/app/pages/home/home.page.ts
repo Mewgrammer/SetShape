@@ -20,15 +20,9 @@ export class HomePage implements OnInit{
   constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
   ngOnInit() {
-    this.getVersion();
     this.trainingPlan = this._dataService.CurrentTrainingPlan;
     if(this.trainingPlan != null)
       this.trainingDays = this.trainingPlan.days;
-  }
-
-  public async getVersion() {
-    const version =  await Pro.deploy.getCurrentVersion();
-    console.log("Version:", version);
   }
 
   public async navigateToAddPage() {

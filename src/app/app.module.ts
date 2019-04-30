@@ -18,7 +18,7 @@ import {CounterComponent} from './components/counter/counter.component';
   entryComponents: [],
   imports: [
       BrowserModule,
-      IonicModule.forRoot(),
+      IonicModule.forRoot( {swipeBackEnabled: true}),
       AppRoutingModule
   ],
   providers: [

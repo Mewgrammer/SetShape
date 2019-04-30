@@ -22,6 +22,10 @@ export class AddTrainingDayComponent implements OnInit {
     return Object.keys(EWorkoutType).filter(Number);
   }
 
+  public get InputsValid() {
+    return this.name != null && this.name.length > 0 && this.selectedWorkouts != null && this.selectedWorkouts.length > 0;
+  }
+
   constructor(private _dataService: DataService, private router: Router) { }
 
   ngOnInit() {

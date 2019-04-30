@@ -23,13 +23,13 @@
       </ion-item>
       <ion-item color="dark">
           <ion-label position="stacked">Übungen</ion-label>
-          <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100">
+          <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
             <ion-select-option [value]="type" *ngFor="let type of WorkoutTypes">
               {{WorkoutTypeEnum[type]}}
             </ion-select-option>
           </ion-select>
       </ion-item>
-      <ion-button color="warning" (click)="onAddDayClick()">Tag hinzufügen</ion-button>
+      <ion-button color="warning" (click)="onAddDayClick()" [disabled]="!InputsValid">Tag hinzufügen</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

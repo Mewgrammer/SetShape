@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DataService} from '../../services/data.service';
 import {EWorkoutType, IWorkout, Workout} from '../../resources/models/workout';
 import {TrainingDayPopoverComponent} from '../training-day/components/training-day-popover/training-day-popover.component';
-import {PopoverController} from '@ionic/angular';
+import {PopoverController, ToastController} from '@ionic/angular';
 
 @Component({
   selector: 'app-workout',
@@ -15,7 +15,7 @@ export class WorkoutPage implements OnInit {
   public workout: IWorkout;
   private workoutType: EWorkoutType;
 
-  constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController,) {
+  constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController) {
 
   }
 
@@ -33,6 +33,14 @@ export class WorkoutPage implements OnInit {
     catch (e) {
       console.error(e);
     }
+  }
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Eintrag hinzugefügt',
+      duration: 2000
+    });
+    toast.present();
   }
 
   async presentPopover(ev: any) {
@@ -53,7 +61,8 @@ export class WorkoutPage implements OnInit {
   }
 
 
-  onFinish() {
+  async onFinish() {
+    await this.presentToast();
     this._dataService.addHistoryItem(this.workout);
   }
 

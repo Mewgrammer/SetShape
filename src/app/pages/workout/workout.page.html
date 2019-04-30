@@ -22,7 +22,7 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-            Sets:
+            Sets
           </ion-col>
           <ion-col>
             <ion-input [(ngModel)]="workout.sets" type="number" min="0"></ion-input>
@@ -36,7 +36,7 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            Repetitions:
+            Wiederholungen
           </ion-col>
           <ion-col>
             <ion-input [(ngModel)]="workout.repetitions" type="number" min="0"></ion-input>
@@ -50,7 +50,7 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            Weight:
+            Gewicht
           </ion-col>
           <ion-col>
             <ion-input [(ngModel)]="workout.weight" type="number" min="0"></ion-input>
@@ -63,8 +63,8 @@
           </ion-col>
         </ion-row>
       </ion-grid>
-      <ion-button (click)="onFinish()"> Finish </ion-button>
-      <ion-button (click)="onHistoryClick()"> History </ion-button>
+      <ion-button (click)="onFinish()"> Übung beenden </ion-button>
+      <ion-button (click)="onHistoryClick()"> Historie </ion-button>
       <ion-button (click)="onTimerClick()"> Timer </ion-button>
     </ion-card-content>
   </ion-card>

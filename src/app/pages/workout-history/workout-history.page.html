@@ -17,7 +17,7 @@
 <ion-content color="dark" *ngIf="!history || history.length == 0">
   <ion-card color="dark">
     <ion-card-header color="dark">
-      <ion-card-subtitle>No Items in History!</ion-card-subtitle>
+      <ion-card-subtitle>Keine Einträge!</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
 
@@ -28,24 +28,37 @@
 <ion-content color="dark" *ngIf="history && history.length > 0">
   <ion-card color="dark">
     <ion-card-content>
-      <table class="table table-dark text-white bg-ionic-dark">
-        <thead>
-          <tr>
-            <td>Date</td>
-            <td>Sets</td>
-            <td>Repetitions</td>
-            <td>Weight</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of history">
-            <td>{{item.date | date}}</td>
-            <td>{{item.workout.sets}}</td>
-            <td>{{item.workout.repetitions}}</td>
-            <td>{{item.workout.weight}}</td>
-          </tr>
-        </tbody>
-      </table>
+      <ion-list class="bg-ionic-dark">
+        <ion-grid>
+          <ion-row>
+            <ion-col>Datum</ion-col>
+            <ion-col>Sätze</ion-col>
+            <ion-col>Wiederholungen</ion-col>
+            <ion-col>Gewicht</ion-col>
+          </ion-row>
+          <ion-row  *ngFor="let item of history">
+            <ion-item-sliding>
+              <ion-item color="dark">
+                    <ion-col>
+                      {{item.date | date}}
+                    </ion-col>
+                    <ion-col>
+                      {{item.workout.sets}}
+                    </ion-col>
+                    <ion-col>
+                      {{item.workout.repetitions}}
+                    </ion-col>
+                    <ion-col>
+                      {{item.workout.weight}}
+                    </ion-col>
+              </ion-item>
+              <ion-item-options>
+                <ion-button color="danger" (click)="removeItem(item)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
     </ion-card-content>
   </ion-card>
 </ion-content>

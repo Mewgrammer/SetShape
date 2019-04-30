@@ -35,4 +35,8 @@ export class WorkoutHistoryPage implements OnInit {
   presentPopover($event: MouseEvent) {
     
   }
+
+  removeItem(item: IWorkoutHistoryItem) {
+      this.history.splice(this.history.indexOf(item), 1);
+  }
 }

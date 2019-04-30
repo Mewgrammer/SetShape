@@ -1,7 +1,10 @@
 <ion-header>
   <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
     <ion-title>
-      Home
+      {{day.name}}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="presentPopover($event)">
@@ -11,21 +14,21 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!trainingPlan">
+<ion-content color="dark" *ngIf="!day.workouts || day.workouts.length == 0">
   <ion-card color="dark">
     <ion-card-header color="dark">
-      <ion-card-subtitle>Create new Training Plan</ion-card-subtitle>
+      <ion-card-subtitle>Add a Workout !</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      Manual or Generate ?
+      Add one from Templates !
     </ion-card-content>
   </ion-card>
 </ion-content>
 
-<ion-content color="dark" *ngIf="trainingPlan">
-  <ion-card color="dark" *ngFor="let day of trainingDays" (click)="onDayClick(day)">
+<ion-content color="dark" *ngIf="day.workouts && day.workouts.length > 0">
+  <ion-card color="dark" *ngFor="let workout of day.workouts" (click)="onWorkoutClick(workout)">
     <ion-card-header color="dark">
-      <ion-card-title>{{day.name}}</ion-card-title>
+      <ion-card-title>{{workout.name}}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
     </ion-card-content>

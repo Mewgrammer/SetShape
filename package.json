@@ -6,6 +6,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "lab": "",
+    "devapp": "",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

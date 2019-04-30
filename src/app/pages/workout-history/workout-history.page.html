@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{"History "+ history[0].workout.name}}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="presentPopover($event)">
+        <ion-icon slot="icon-only" name="more"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="dark" *ngIf="!history || history.length == 0">
+  <ion-card color="dark">
+    <ion-card-header color="dark">
+      <ion-card-subtitle>No Items in History!</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-content color="dark" *ngIf="history && history.length > 0">
+  <ion-card color="dark">
+    <ion-card-content>
+      <table class="table table-dark text-white bg-ionic-dark">
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>Sets</td>
+            <td>Repetitions</td>
+            <td>Weight</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of history">
+            <td>{{item.date | date}}</td>
+            <td>{{item.workout.sets}}</td>
+            <td>{{item.workout.repetitions}}</td>
+            <td>{{item.workout.weight}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

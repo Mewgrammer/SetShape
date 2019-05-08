@@ -46,6 +46,7 @@ export class DataService {
 
   public changeTrainingPlan(plan: ITrainingPlan) {
     this._currentTrainingPlan = {...plan};
+    console.log("Current Trainingplan Changed", this._currentTrainingPlan);
   }
 
   addHistoryItem(workout: IWorkout) {

@@ -10,8 +10,6 @@ import {DataService} from '../../../../services/data.service';
 })
 export class ChangeTrainingComponent implements OnInit {
 
-  public trainings: TrainingPlan[] = [];
-
   public get Trainings() {
     return this._dataService.TrainingPlans;
   }
@@ -19,15 +17,18 @@ export class ChangeTrainingComponent implements OnInit {
   constructor(private _dataService: DataService, private _router: Router,) { }
 
   ngOnInit() {
-    this.trainings = this._dataService.TrainingPlans;
   }
 
   async onSelectTraining(training: TrainingPlan) {
     this._dataService.changeTrainingPlan(training);
+    await this._router.navigateByUrl("/");
   }
 
   async onCreateNewTraining() {
     await this._router.navigateByUrl("/create");
   }
 
+  removeTraining(training: ITrainingPlan) {
+
+  }
 }

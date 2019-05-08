@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {TimeSpan} from '../../resources/TimeSpan';
 
 @Component({
@@ -6,7 +6,7 @@ import {TimeSpan} from '../../resources/TimeSpan';
   templateUrl: './timer.page.html',
   styleUrls: ['./timer.page.scss'],
 })
-export class TimerPage implements OnInit {
+export class TimerPage implements OnInit, AfterViewInit {
 
   public passedTime: TimeSpan;
   public startDate: Date;
@@ -40,6 +40,10 @@ export class TimerPage implements OnInit {
   ngOnDestroy(): void {
     if(this.dateUpdater != 0)
       clearInterval(this.dateUpdater);
+  }
+
+  ngAfterViewInit(): void {
+    this.start();
   }
 
 

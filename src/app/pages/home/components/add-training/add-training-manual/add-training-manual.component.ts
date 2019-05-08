@@ -42,10 +42,11 @@ export class AddTrainingManualComponent implements OnInit {
     this.days.push(newDay);
   }
 
-  onCreateTraining() {
+  async onCreateTraining() {
     if(this.name && this.name.length > 0) {
       const newTrainingPlan = new TrainingPlan(this.name, this.days);
       this._dataService.createTrainingPlan(newTrainingPlan);
+      await this._router.navigateByUrl("/change");
     }
   }
 }

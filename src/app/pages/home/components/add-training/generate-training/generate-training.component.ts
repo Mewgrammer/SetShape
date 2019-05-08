@@ -43,7 +43,7 @@ export class GenerateTrainingComponent implements OnInit {
     this.days.push(newDay);
   }
 
-  onCreateTraining() {
-
+  async onCreateTraining() {
+    await this._router.navigateByUrl("/change");
   }
 }

@@ -1,7 +1,12 @@
 <ion-header>
   <ion-toolbar color="dark">
     <ion-title>
-      Home
+      <span *ngIf="!TrainingPlan">
+        Home
+      </span>
+      <span *ngIf="TrainingPlan">
+        {{TrainingPlan.name}}
+      </span>
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="presentPopover($event)">
@@ -11,7 +16,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!trainingPlan">
+<ion-content color="dark" *ngIf="!TrainingPlan">
   <ion-card color="dark">
     <ion-card-header color="dark">
       <ion-card-subtitle>Erstellen Sie einen neuen Trainings-Plan</ion-card-subtitle>
@@ -22,10 +27,12 @@
   </ion-card>
 </ion-content>
 
-<ion-content color="dark" *ngIf="trainingPlan">
-  <ion-card color="dark" *ngFor="let day of trainingDays" (click)="onDayClick(day)">
+<ion-content color="dark" *ngIf="TrainingPlan">
+  <ion-card color="dark" *ngFor="let day of TrainingDays" (click)="onDayClick(day)">
     <ion-card-header color="dark">
-      <ion-card-title>{{day.name}}</ion-card-title>
+      <ion-card-title>
+        {{day.name}}
+      </ion-card-title>
     </ion-card-header>
     <ion-card-content>
     </ion-card-content>

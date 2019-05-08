@@ -17,6 +17,13 @@ export class HomePage implements OnInit{
   public trainingPlan: ITrainingPlan;
   public trainingDays: ITrainingDay[] = [];
 
+  public get TrainingPlan() {
+    return this._dataService.CurrentTrainingPlan;
+  }
+  public get TrainingDays() {
+    return this.TrainingPlan.days;
+  }
+
   constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
   ngOnInit() {
@@ -41,5 +48,9 @@ export class HomePage implements OnInit{
 
   async onDayClick(day: ITrainingDay) {
     await this._router.navigateByUrl(this._router.url + "/training-day/" + day.id);
+  }
+
+  removeDay(day: ITrainingDay) {
+
   }
 }

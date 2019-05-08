@@ -14,9 +14,6 @@ import {Pro} from '@ionic/pro';
 })
 export class HomePage implements OnInit{
 
-  public trainingPlan: ITrainingPlan;
-  public trainingDays: ITrainingDay[] = [];
-
   public get TrainingPlan() {
     return this._dataService.CurrentTrainingPlan;
   }
@@ -26,10 +23,10 @@ export class HomePage implements OnInit{
 
   constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
-  ngOnInit() {
-    this.trainingPlan = this._dataService.CurrentTrainingPlan;
-    if(this.trainingPlan != null)
-      this.trainingDays = this.trainingPlan.days;
+  async ngOnInit() {
+    if(this.TrainingPlan == null) {
+      await this._router.navigateByUrl(this._router.url + "/change");
+    }
   }
 
   public async navigateToAddPage() {
@@ -51,6 +48,10 @@ export class HomePage implements OnInit{
   }
 
   removeDay(day: ITrainingDay) {
+    this._dataService.removeTrainingDay(day);
+  }
 
+  async onChangeTraining() {
+    await this._router.navigateByUrl(this._router.url + "/create");
   }
 }

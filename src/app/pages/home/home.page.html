@@ -8,7 +8,7 @@
         {{TrainingPlan.name}}
       </span>
     </ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="TrainingPlan != null">
       <ion-button (click)="presentPopover($event)">
         <ion-icon slot="icon-only" name="more"></ion-icon>
       </ion-button>
@@ -19,19 +19,27 @@
 <ion-content color="dark" *ngIf="!TrainingPlan">
   <ion-card color="dark">
     <ion-card-header color="dark">
-      <ion-card-subtitle>Erstellen Sie einen neuen Trainings-Plan</ion-card-subtitle>
+      <ion-button size="large" color="warning" (click)="onChangeTraining()">Ein Training auswählen</ion-button>
     </ion-card-header>
     <ion-card-content>
-      Manual or Generate ?
     </ion-card-content>
   </ion-card>
 </ion-content>
 
 <ion-content color="dark" *ngIf="TrainingPlan">
-  <ion-card color="dark" *ngFor="let day of TrainingDays" (click)="onDayClick(day)">
+  <ion-card color="dark" *ngFor="let day of TrainingDays">
     <ion-card-header color="dark">
       <ion-card-title>
-        {{day.name}}
+        <ion-item-sliding>
+          <ion-item color="dark" (click)="onDayClick(day)">
+            <h5>
+              {{day.name}}
+            </h5>
+          </ion-item>
+          <ion-item-options>
+            <ion-button color="danger" (click)="removeDay(day)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+          </ion-item-options>
+        </ion-item-sliding>
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>

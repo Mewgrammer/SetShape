@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import {ITrainingDay, ITrainingPlan} from '../resources/models/training-plan';
+import {ITrainingDay, ITrainingPlan, TrainingDay} from '../resources/models/training-plan';
 import {TestData} from '../resources/testdata';
 import {IWorkout, IWorkoutHistoryItem} from '../resources/models/workout';
+import {workflow} from '@angular-devkit/schematics';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,38 @@ export class DataService {
   public changeTrainingPlan(plan: ITrainingPlan) {
     this._currentTrainingPlan = {...plan};
     console.log("Current Trainingplan Changed", this._currentTrainingPlan);
+  }
+
+  public removeTrainingPlan(plan: ITrainingPlan) {
+    const matchingPlan = this._trainingPlans.find(p => p.id == plan.id);
+    if(matchingPlan != null) {
+      this._trainingPlans.splice(this._trainingPlans.indexOf(matchingPlan), 1);
+      console.log("Removed Training", matchingPlan, this._trainingPlans);
+      if(this._currentTrainingPlan.id == plan.id) {
+        this._currentTrainingPlan = null;
+      }
+    }
+  }
+
+  public removeTrainingDay(day: ITrainingDay) {
+    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
+    if(matchingDay != null) {
+      this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
+      console.log("Removed TrainingDay", matchingDay, this._currentTrainingPlan.days);
+    }
+  }
+
+  public removeWorkoutFromDay(workout: IWorkout, day: ITrainingDay) {
+    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
+    if(matchingDay != null) {
+      const dayIndex = this._currentTrainingPlan.days.indexOf(matchingDay);
+      const matchingWorkout = this._currentTrainingPlan.days[dayIndex].workouts.find(w => w.id == workout.id);
+      if(matchingWorkout) {
+        const workoutIndex =  this._currentTrainingPlan.days[dayIndex].workouts.indexOf(matchingWorkout);
+        this._currentTrainingPlan.days[dayIndex].workouts.splice(workoutIndex, 1);
+        console.log("Removed Workout", workout,  this._currentTrainingPlan.days[dayIndex].workouts);
+      }
+    }
   }
 
   addHistoryItem(workout: IWorkout) {

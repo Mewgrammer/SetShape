@@ -29,6 +29,6 @@ export class ChangeTrainingComponent implements OnInit {
   }
 
   removeTraining(training: TrainingPlan) {
-
+    this._dataService.removeTrainingPlan(training);
   }
 }

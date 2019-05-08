@@ -3,6 +3,7 @@ import {ITrainingDay, TrainingDay, TrainingPlan} from '../../../../../resources/
 import {EWorkoutType, IWorkout} from '../../../../../resources/models/workout';
 import {Router} from '@angular/router';
 import {DataService} from '../../../../../services/data.service';
+import {PopoverController, ToastController} from '@ionic/angular';
 
 @Component({
   selector: 'app-add-training-manual',
@@ -27,9 +28,17 @@ export class AddTrainingManualComponent implements OnInit {
     return this.dayName != null && this.dayName.length > 0 && this.selectedWorkouts != null && this.selectedWorkouts.length > 0;
   }
 
-  constructor(private _dataService: DataService, private _router: Router,) { }
+  constructor(private _dataService: DataService, private _router: Router, public toastController: ToastController) { }
 
   ngOnInit() {}
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Training erstellt',
+      duration: 2000
+    });
+    toast.present();
+  }
 
   removeDay(day: TrainingDay) {
     this.days.splice(this.days.indexOf(day), 1);
@@ -46,6 +55,7 @@ export class AddTrainingManualComponent implements OnInit {
     if(this.name && this.name.length > 0) {
       const newTrainingPlan = new TrainingPlan(this.name, this.days);
       this._dataService.createTrainingPlan(newTrainingPlan);
+      await this.presentToast();
       await this._router.navigateByUrl("/change");
     }
   }

@@ -4,7 +4,7 @@
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>
-      Change Training
+      Training Wechseln
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -17,18 +17,22 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content style="font-size: 18px;">
-      <ion-list class="bg-ionic-dark">
-        <ion-item-sliding *ngFor="let training of Trainings" (click)="onSelectTraining(training)">
-          <ion-item color="dark">
-            <h5>
-              {{training.name}}
-            </h5>
-          </ion-item>
-          <ion-item-options>
-            <ion-button color="danger" (click)="removeTraining(training)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-list>
+      <ion-card color="dark" *ngFor="let training of Trainings" >
+        <ion-card-header>
+          <ion-card-title>
+            <ion-item-sliding>
+              <ion-item color="dark" (click)="onSelectTraining(training)">
+                <h5>
+                  {{training.name}}
+                </h5>
+              </ion-item>
+              <ion-item-options>
+                <ion-button color="danger" (click)="removeTraining(training)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-card-title>
+        </ion-card-header>
+      </ion-card>
     </ion-card-content>
   </ion-card>
   <ion-card color="dark">

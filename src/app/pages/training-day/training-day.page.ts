@@ -48,4 +48,8 @@ export class TrainingDayPage implements OnInit {
    await this._router.navigateByUrl("/workout/" + workout.type);
   }
 
+  removeWorkout(workout: IWorkout) {
+    this._dataService.removeWorkoutFromDay(workout, this.day);
+    this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
+  }
 }

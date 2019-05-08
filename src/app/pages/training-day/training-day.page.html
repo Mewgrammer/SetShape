@@ -26,9 +26,20 @@
 </ion-content>
 
 <ion-content color="dark" *ngIf="day.workouts && day.workouts.length > 0">
-  <ion-card color="dark" *ngFor="let workout of day.workouts" (click)="onWorkoutClick(workout)">
+  <ion-card color="dark" *ngFor="let workout of day.workouts">
     <ion-card-header color="dark">
-      <ion-card-title>{{workout.name}}</ion-card-title>
+      <ion-card-title>
+        <ion-item-sliding>
+          <ion-item color="dark" (click)="onWorkoutClick(workout)">
+            <h5>
+              {{workout.name}}
+            </h5>
+          </ion-item>
+          <ion-item-options>
+            <ion-button color="danger" (click)="removeWorkout(workout)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-card-title>
     </ion-card-header>
     <ion-card-content>
     </ion-card-content>

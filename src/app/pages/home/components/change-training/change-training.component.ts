@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {TrainingPlan} from '../../../../resources/models/training-plan';
+import {ITrainingPlan, TrainingPlan} from '../../../../resources/models/training-plan';
 import {DataService} from '../../../../services/data.service';
 
 @Component({
@@ -28,7 +28,7 @@ export class ChangeTrainingComponent implements OnInit {
     await this._router.navigateByUrl("/create");
   }
 
-  removeTraining(training: ITrainingPlan) {
+  removeTraining(training: TrainingPlan) {
 
   }
 }

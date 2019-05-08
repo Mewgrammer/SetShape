@@ -19,13 +19,17 @@ export class TimerPage implements OnInit, AfterViewInit {
     this.passedTime = TimeSpan.zero;
   }
 
+  ngAfterViewInit(): void {
+    this.start();
+  }
+
   public reset() {
     this.startDate = new Date(Date.now());
     this.passedTime = TimeSpan.zero;
   }
   public start() {
     if(this.dateUpdater == 0)
-      this.dateUpdater = setInterval(this.updateDate.bind(this), 42);
+      this.dateUpdater = <any>setInterval(this.updateDate.bind(this), 42);
   }
 
   private updateDate() {
@@ -42,9 +46,7 @@ export class TimerPage implements OnInit, AfterViewInit {
       clearInterval(this.dateUpdater);
   }
 
-  ngAfterViewInit(): void {
-    this.start();
-  }
+
 
 
 }

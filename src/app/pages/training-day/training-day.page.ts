@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {EWorkoutType, IWorkout, Workout} from '../../resources/models/workout';
 import {DataService} from '../../services/data.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ITrainingDay} from '../../resources/models/training-plan';
+import {ITrainingDay, IWorkout} from '../../resources/models/interfaces';
 import {PopoverController} from '@ionic/angular';
-import {AddWorkoutComponent} from './components/add-workout/add-workout.component';
 import {TrainingDayPopoverComponent} from './components/training-day-popover/training-day-popover.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-training-day',
@@ -33,6 +32,11 @@ export class TrainingDayPage implements OnInit {
     catch (e) {
       console.error(e);
     }
+  }
+
+  public WorkoutIsFinished(workout: IWorkout) {
+    const workoutsInLastWeek = this._dataService.WorkoutHistory.filter(w => w.workout.type == workout.type && w.date.getTime() > moment(new Date()).subtract('week', 1).toDate().getTime());
+    return workoutsInLastWeek != null && workoutsInLastWeek.length > 0;
   }
 
   async presentPopover(ev: any) {

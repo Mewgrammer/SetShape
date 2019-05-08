@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DataService} from '../../services/data.service';
-import {EWorkoutType, IWorkout, Workout} from '../../resources/models/workout';
 import {TrainingDayPopoverComponent} from '../training-day/components/training-day-popover/training-day-popover.component';
-import {PopoverController, ToastController} from '@ionic/angular';
+import {NavController, PopoverController, ToastController} from '@ionic/angular';
+import {EWorkoutType, IWorkout} from '../../resources/models/interfaces';
+import {Workout} from '../../resources/models/entities';
 
 @Component({
   selector: 'app-workout',
@@ -15,7 +16,7 @@ export class WorkoutPage implements OnInit {
   public workout: IWorkout;
   private workoutType: EWorkoutType;
 
-  constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController) {
+  constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController, public navCtrl: NavController) {
 
   }
 
@@ -37,7 +38,7 @@ export class WorkoutPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Eintrag hinzugefügt',
+      message: 'Übung abgeschlossen',
       duration: 2000
     });
     toast.present();
@@ -64,6 +65,7 @@ export class WorkoutPage implements OnInit {
   async onFinish() {
     await this.presentToast();
     this._dataService.addHistoryItem(this.workout);
+    this.navCtrl.back();
   }
 
   onDecrementSets() {

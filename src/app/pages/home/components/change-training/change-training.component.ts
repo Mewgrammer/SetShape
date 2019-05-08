@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
-import {ITrainingPlan, TrainingPlan} from '../../../../resources/models/training-plan';
 import {DataService} from '../../../../services/data.service';
+import {TrainingPlan} from '../../../../resources/models/entities';
 
 @Component({
   selector: 'app-change-training',

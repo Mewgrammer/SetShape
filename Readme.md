@@ -18,7 +18,7 @@ This project was created using Ionic and Angular
 
 
 ## Using Ionic Dev-App
-* Run `ionic serve --devApp` in a terminal from the project root.
+* Run `ionic serve --devapp` in a terminal from the project root.
 * Open the Ionic Dev-App on your Mobile device and enter the IP-Adress of your Device with Port 8100.
 
 

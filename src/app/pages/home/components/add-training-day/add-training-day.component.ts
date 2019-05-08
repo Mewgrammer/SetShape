@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {EWorkoutType, IWorkout, Workout} from '../../../../resources/models/workout';
 import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
 import {DataService} from '../../../../services/data.service';
-import {ITrainingDay, TrainingDay} from '../../../../resources/models/training-plan';
+import {EWorkoutType, ITrainingDay, IWorkout} from '../../../../resources/models/interfaces';
+import {TrainingDay} from '../../../../resources/models/entities';
 
 @Component({
   selector: 'app-add-training-day',
@@ -37,7 +37,9 @@ export class AddTrainingDayComponent implements OnInit {
     console.log("Selected Workouts", this.selectedWorkouts);
     const workouts: IWorkout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
     console.log("Workouts", workouts);
-    const newDay: ITrainingDay = new TrainingDay(this.name, workouts);
+    let newDay: ITrainingDay = new TrainingDay();
+    newDay.name = this.name;
+    newDay.workouts = workouts;
     console.log("New Day", newDay);
     this._dataService.addDayToCurrentTrainingPlan(newDay);
     await this.router.navigateByUrl("/");

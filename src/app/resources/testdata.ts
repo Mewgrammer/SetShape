@@ -1,7 +1,8 @@
-import {ITrainingPlan, TrainingDay, TrainingPlan} from './models/training-plan';
-import {EWorkoutType, IWorkout, IWorkoutHistoryItem} from './models/workout';
+import {EWorkoutType, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from './models/interfaces';
+import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from './models/entities';
+import {DataFactory} from './factory';
 
-const workoutBankDruecken: IWorkout = {
+const workoutBankDruecken: Workout = {
     id: 0,
     type: EWorkoutType.BankDruecken,
     name: "Bank Drücken",
@@ -10,7 +11,7 @@ const workoutBankDruecken: IWorkout = {
     weight: 50,
 };
 
-const workoutButterfly: IWorkout = {
+const workoutButterfly: Workout = {
     id: 1,
     name: "Butterfly",
     type: EWorkoutType.Butterfly,
@@ -19,7 +20,7 @@ const workoutButterfly: IWorkout = {
     weight: 12,
 };
 
-const workoutTrizeps: IWorkout = {
+const workoutTrizeps: Workout = {
     id: 2,
     name: "Trizeps Curls",
     type: EWorkoutType.TrizepsCurls,
@@ -28,7 +29,7 @@ const workoutTrizeps: IWorkout = {
     weight: 7,
 };
 
-const workoutDips: IWorkout = {
+const workoutDips: Workout = {
     id: 4,
     type: EWorkoutType.Dips,
     name: "Dips",
@@ -37,47 +38,26 @@ const workoutDips: IWorkout = {
     weight: 3,
 };
 
-
-
-
-export const testHistory: IWorkoutHistoryItem[] = [
-    {
-        date: new Date(Date.parse("01/01/2019")),
-        workout: workoutBankDruecken
-    },
-    {
-        date: new Date(Date.parse("02/01/2019")),
-        workout: workoutButterfly
-    },
-    {
-        date: new Date(Date.parse("03/01/2019")),
-        workout: workoutTrizeps
-    },
-    {
-        date: new Date(Date.parse("01/02/2019")),
-        workout: workoutBankDruecken
-    },
-    {
-        date: new Date(Date.parse("02/02/2019")),
-        workout: workoutBankDruecken
-    },
-    {
-        date: new Date(Date.parse("02/02/2019")),
-        workout: workoutButterfly
-    }
+export const testHistory: WorkoutHistoryItem[] = [
+    DataFactory.createWorkoutHistoryItem(workoutBankDruecken),
+    DataFactory.createWorkoutHistoryItem(workoutBankDruecken),
+    DataFactory.createWorkoutHistoryItem(workoutButterfly),
+    DataFactory.createWorkoutHistoryItem(workoutTrizeps),
+    DataFactory.createWorkoutHistoryItem(workoutTrizeps),
+    DataFactory.createWorkoutHistoryItem(workoutDips),
 ];
 
-export const testPlan: ITrainingPlan = new TrainingPlan("Test Plan", [
-    new TrainingDay("Test Tag 1", [workoutBankDruecken, workoutButterfly]),
-    new TrainingDay("Test Tag 2", [workoutTrizeps, workoutButterfly]),
-    new TrainingDay("Test Tag 3", [workoutBankDruecken, workoutDips]),
-    new TrainingDay("Test Tag 4", [workoutButterfly, workoutTrizeps]),
+export const testPlan: TrainingPlan = DataFactory.createTrainingPlan("Test Plan", [
+   DataFactory.createTrainingDay("Test Tag 1", [workoutBankDruecken, workoutButterfly]),
+   DataFactory.createTrainingDay("Test Tag 2", [workoutTrizeps, workoutButterfly]),
+   DataFactory.createTrainingDay("Test Tag 3", [workoutBankDruecken, workoutDips]),
+   DataFactory.createTrainingDay("Test Tag 4", [workoutButterfly, workoutTrizeps]),
 ]);
 
 export class TestData {
-    public static plan: ITrainingPlan = testPlan;
-    public static history: IWorkoutHistoryItem[] = testHistory;
-    public static workouts: IWorkout[] = [
+    public static plan: TrainingPlan = testPlan;
+    public static history: WorkoutHistoryItem[] = testHistory;
+    public static workouts: Workout[] = [
         workoutButterfly,
         workoutTrizeps,
         workoutBankDruecken,

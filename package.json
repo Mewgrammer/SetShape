@@ -8,10 +8,22 @@
     "start": "ng serve",
     "lab": "",
     "devapp": "",
+    "emulate": "ionic cordova emulate android --target=Pixel_3_API_25",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
+  },
+  "config": {
+    "browser": {
+      "http": false,
+      "https": false,
+      "net": false,
+      "path": false,
+      "stream": false,
+      "tls": false
+    },
+    "ionic_webpack": "./config/webpack.config.js"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +40,10 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^4.1.0",
     "@ionic/pro": "^2.0.4",
+    "@ionic/storage": "^2.2.0",
+    "@types/hammerjs": "^2.0.36",
+    "angular-cli-builders": "^2.1.2",
+    "angular-ionic-cli-builders": "^2.1.4",
     "bootstrap": "^4.3.1",
     "cordova-android": "7.1.4",
     "cordova-plugin-device": "^2.0.2",
@@ -40,9 +56,12 @@
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-sqlite-storage": "3.2.0",
     "core-js": "^2.5.4",
+    "hammerjs": "^2.0.8",
     "jquery": "^3.4.1",
+    "moment": "^2.24.0",
     "popper.js": "^1.14.7",
     "rxjs": "~6.3.3",
+    "typeorm": "^0.2.17",
     "zone.js": "~0.8.29"
   },
   "devDependencies": {
@@ -55,10 +74,11 @@
     "@angular/compiler-cli": "~7.2.2",
     "@angular/language-service": "~7.2.2",
     "@ionic/angular-toolkit": "~1.4.0",
+    "@ionic/app-scripts": "^3.2.3",
     "@ionic/lab": "1.0.24",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "~10.12.0",
+    "@types/node": "^10.14.6",
     "codelyzer": "~4.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
@@ -68,6 +88,7 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.4.0",
+    "sql.js": "^1.0.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
     "typescript": "~3.1.6"

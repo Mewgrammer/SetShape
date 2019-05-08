@@ -16,9 +16,9 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-button color="primary" (click)="start()">Start</ion-button>
-        <ion-button color="danger" (click)="stop()">Stop</ion-button>
-        <ion-button color="warning" (click)="reset()">Reset</ion-button>
+        <ion-button size="large" color="primary" *ngIf="dateUpdater == 0" (click)="start()">Start</ion-button>
+        <ion-button size="large" color="danger"  *ngIf="dateUpdater != 0" (click)="stop()">Stop</ion-button>
+        <ion-button size="large" color="warning" (click)="reset()">Reset</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

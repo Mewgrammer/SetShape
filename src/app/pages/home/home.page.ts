@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {NavController, PopoverController} from '@ionic/angular';
 import {TrainingsPopoverComponent} from './components/trainings-popover/trainings-popover.component';
-import {ITrainingDay, ITrainingPlan} from '../../resources/models/training-plan';
-import {TestData} from '../../resources/testdata';
+import {ITrainingDay, ITrainingPlan} from '../../resources/models/interfaces';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
-import {Pro} from '@ionic/pro';
 
 @Component({
   selector: 'app-home-page',

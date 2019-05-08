@@ -30,8 +30,13 @@
     <ion-card-header color="dark">
       <ion-card-title>
         <ion-item-sliding>
-          <ion-item color="dark" (click)="onWorkoutClick(workout)">
+          <ion-item color="dark" (click)="onWorkoutClick(workout)" *ngIf="!WorkoutIsFinished(workout)">
             <h5>
+              {{workout.name}}
+            </h5>
+          </ion-item>
+          <ion-item color="dark" (click)="onWorkoutClick(workout)" *ngIf="WorkoutIsFinished(workout)">
+            <h5 class="text-success">
               {{workout.name}}
             </h5>
           </ion-item>

@@ -4,7 +4,7 @@
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title>
-      {{"History "+ history[0].workout.name}}
+      {{"History "+ History[0].workout.name}}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="presentPopover($event)">
@@ -14,7 +14,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!history || history.length == 0">
+<ion-content color="dark" *ngIf="!History || History.length == 0">
   <ion-card color="dark">
     <ion-card-header color="dark">
       <ion-card-subtitle>Keine Einträge!</ion-card-subtitle>
@@ -25,7 +25,7 @@
   </ion-card>
 </ion-content>
 
-<ion-content color="dark" *ngIf="history && history.length > 0">
+<ion-content color="dark" *ngIf="History && History.length > 0">
   <ion-card color="dark">
     <ion-card-content>
       <ion-list class="bg-ionic-dark">
@@ -36,7 +36,7 @@
             <ion-col>Wiederholungen</ion-col>
             <ion-col>Gewicht</ion-col>
           </ion-row>
-          <ion-row  *ngFor="let item of history">
+          <ion-row  *ngFor="let item of History">
             <ion-item-sliding>
               <ion-item color="dark">
                     <ion-col>

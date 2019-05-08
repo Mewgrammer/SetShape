@@ -28,10 +28,10 @@
               <ion-input [(ngModel)]="workout.sets" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="onDecrementSets()">-</ion-button>
+              <ion-button size="large" color="warning"  LongPressDirective [longPressTimeout]="100"  (pressStarted)="onDecrementSets()"  (pressing)="onDecrementSets()" (click)="onDecrementSets()">-</ion-button>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="onIncrementSets()">+</ion-button>
+              <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100" (pressStarted)="onIncrementSets()"  (pressing)="onIncrementSets()" (click)="onIncrementSets()">+</ion-button>
             </td>
           </tr>
           <tr>
@@ -44,10 +44,10 @@
               <ion-input [(ngModel)]="workout.repetitions" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="OnDecrementRepetitions()">-</ion-button>
+              <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="OnDecrementRepetitions()"  (pressing)="OnDecrementRepetitions()" (click)="OnDecrementRepetitions()">-</ion-button>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="OnIncrementRepetitions()">+</ion-button>
+              <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="OnIncrementRepetitions()"  (pressing)="OnIncrementRepetitions()" (click)="OnIncrementRepetitions()">+</ion-button>
             </td>
           </tr>
           <tr>
@@ -60,10 +60,10 @@
               <ion-input [(ngModel)]="workout.weight"  class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="onDecrementWeight()">-</ion-button>
+              <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="onDecrementWeight()"  (pressing)="onDecrementWeight()" (click)="onDecrementWeight()">-</ion-button>
             </td>
             <td>
-              <ion-button size="large" color="warning" (click)="onIncrementWeight()">+</ion-button>
+              <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="onIncrementWeight()"  (pressing)="onIncrementWeight()" (click)="onIncrementWeight()">+</ion-button>
             </td>
           </tr>
         </tbody>

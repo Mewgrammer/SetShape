@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {EWorkoutType, IWorkout, IWorkoutHistoryItem} from '../../resources/models/workout';
 import {DataService} from '../../services/data.service';
 import {ActivatedRoute} from '@angular/router';
+import {EWorkoutType, IWorkoutHistoryItem} from '../../resources/models/interfaces';
 
 @Component({
   selector: 'app-workout-history',
@@ -10,8 +10,11 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class WorkoutHistoryPage implements OnInit {
 
-  public history: IWorkoutHistoryItem[] = [];
   private workoutType: EWorkoutType;
+
+  public get History() {
+    return this._dataService.WorkoutHistory.filter(w => w.workout.type == this.workoutType)
+  }
 
   constructor(private _dataService: DataService, private route: ActivatedRoute) {
 
@@ -20,11 +23,6 @@ export class WorkoutHistoryPage implements OnInit {
   ngOnInit() {
     try{
       this.workoutType = <EWorkoutType>parseInt(this.route.snapshot.paramMap.get('type'));
-      console.log("History - WorkoutType:", this.workoutType);
-      if(this.workoutType != null) {
-        this.history = this._dataService.WorkoutHistory.filter(w => w.workout.type == this.workoutType);
-        console.log("History:", this.history);
-      }
     }
     catch (e) {
       console.error(e);
@@ -37,6 +35,6 @@ export class WorkoutHistoryPage implements OnInit {
   }
 
   removeItem(item: IWorkoutHistoryItem) {
-      this.history.splice(this.history.indexOf(item), 1);
+    this._dataService.removeHistoryItem(item);
   }
 }

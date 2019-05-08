@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import {ITrainingDay, ITrainingPlan, TrainingDay} from '../resources/models/training-plan';
+import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
 import {TestData} from '../resources/testdata';
-import {IWorkout, IWorkoutHistoryItem} from '../resources/models/workout';
-import {workflow} from '@angular-devkit/schematics';
+import {DatabaseService} from './database.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +29,7 @@ export class DataService {
     return [...this._workoutHistory];
   }
 
-  constructor() {
+  constructor(private _databaseService: DatabaseService) {
     this._trainingPlans = [TestData.plan];
     this._currentTrainingPlan = this._trainingPlans[0];
     this._workoutHistory = TestData.history;
@@ -66,6 +65,14 @@ export class DataService {
     if(matchingDay != null) {
       this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
       console.log("Removed TrainingDay", matchingDay, this._currentTrainingPlan.days);
+    }
+  }
+
+  public removeHistoryItem(item: IWorkoutHistoryItem) {
+    const match = this._workoutHistory.find(i => i.date == item.date && i.workout.id == item.workout.id);
+    if(match != null) {
+      this._workoutHistory.splice(this._workoutHistory.indexOf(match), 1);
+      console.log("Removed HistoryItem", match, this._workoutHistory);
     }
   }
 

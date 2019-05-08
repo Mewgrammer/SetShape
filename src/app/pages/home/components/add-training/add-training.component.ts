@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {TrainingDay, TrainingPlan} from '../../../../resources/models/training-plan';
 import {Router} from '@angular/router';
 
 @Component({

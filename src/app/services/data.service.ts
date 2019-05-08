@@ -41,7 +41,7 @@ export class DataService {
   }
 
   public createTrainingPlan(plan: ITrainingPlan) {
-
+    this._trainingPlans.push(plan);
   }
 
   public changeTrainingPlan(plan: ITrainingPlan) {

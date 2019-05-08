@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Neues Training manuell erstellen
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="dark">
+  <ion-card color="dark">
+    <ion-card-header>
+      <ion-card-title>
+        Neues Training
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content style="font-size: 18px;">
+      <ion-item color="dark">
+        <ion-label position="stacked">Name</ion-label>
+        <ion-input type="text" [(ngModel)]="name"></ion-input>
+      </ion-item>
+      <ion-card color="dark">
+        <ion-card-header>
+          <ion-card-title>
+            Neuer Trainingstag
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="font-size: 18px;">
+          <ion-item color="dark">
+            <ion-label position="stacked">Name</ion-label>
+            <ion-input type="text" [(ngModel)]="dayName"></ion-input>
+          </ion-item>
+          <ion-item color="dark">
+            <ion-label position="stacked">Übungen</ion-label>
+            <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
+              <ion-select-option [value]="type" *ngFor="let type of WorkoutTypes">
+                {{WorkoutTypeEnum[type]}}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-button color="warning" (click)="onAddDayClick()" [disabled]="!InputsValid">Tag hinzufügen</ion-button>
+        </ion-card-content>
+      </ion-card>
+      <ion-card color="dark" *ngIf="days != null && days.length > 0">
+        <ion-card-header>
+          <ion-card-title>
+            Trainingstage
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content style="font-size: 18px;">
+          <ion-item color="dark">
+            <ion-list class="bg-ionic-dark">
+              <ion-item-sliding *ngFor="let day of days">
+                <ion-item color="dark" class="w-100">
+                  <span class="w-100">
+                    {{day.name}}
+                  </span>
+                </ion-item>
+                <ion-item-options>
+                  <ion-button color="danger" (click)="removeDay(day)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+                </ion-item-options>
+              </ion-item-sliding>
+            </ion-list>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+      <ion-button size="large" color="warning" (click)="onCreateTraining()">Training Hinzufügen</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+

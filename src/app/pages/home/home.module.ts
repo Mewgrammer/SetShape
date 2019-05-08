@@ -8,6 +8,8 @@ import {AddTrainingComponent} from './components/add-training/add-training.compo
 import {TrainingsPopoverComponent} from './components/trainings-popover/trainings-popover.component';
 import {ChangeTrainingComponent} from './components/change-training/change-training.component';
 import {AddTrainingDayComponent} from './components/add-training-day/add-training-day.component';
+import {AddTrainingManualComponent} from './components/add-training/add-training-manual/add-training-manual.component';
+import {GenerateTrainingComponent} from './components/add-training/generate-training/generate-training.component';
 
 const routes: Routes = [
   {
@@ -23,6 +25,14 @@ const routes: Routes = [
     component: AddTrainingComponent,
   },
   {
+    path: 'create/manual',
+    component: AddTrainingManualComponent,
+  },
+  {
+    path: 'create/generate',
+    component: GenerateTrainingComponent,
+  },
+  {
     path: 'change',
     component: ChangeTrainingComponent,
   }
@@ -36,11 +46,13 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   declarations: [
-      HomePage,
-      AddTrainingComponent,
-      AddTrainingDayComponent,
-      ChangeTrainingComponent,
-      TrainingsPopoverComponent,
+    HomePage,
+    AddTrainingComponent,
+    AddTrainingManualComponent,
+    AddTrainingDayComponent,
+    ChangeTrainingComponent,
+    GenerateTrainingComponent,
+    TrainingsPopoverComponent,
   ],
   entryComponents: [
     TrainingsPopoverComponent,

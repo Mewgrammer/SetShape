@@ -4,7 +4,7 @@ import {BehaviorSubject} from 'rxjs';
 import {Platform, ToastController} from '@ionic/angular';
 import {SQLite} from '@ionic-native/sqlite/ngx';
 import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
-import {Connection, createConnection} from 'typeorm';
+import {Connection, createConnection, getRepository, Repository} from 'typeorm';
 import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from '../resources/models/entities';
 
 @Injectable({
@@ -46,16 +46,17 @@ export class DatabaseService {
 
   private _connection: Connection;
 
-  private _trainingDays: Promise<ITrainingDay[]>;
-  private _history: Promise<IWorkoutHistoryItem[]>;
-  private _workouts:  Promise<IWorkout[]>;
-  private _trainingPlans:  Promise<ITrainingPlan[]>;
+  private _trainingDays: Promise<TrainingDay[]>;
+  private _history: Promise<WorkoutHistoryItem[]>;
+  private _workouts:  Promise<Workout[]>;
+  private _trainingPlans:  Promise<TrainingPlan[]>;
 
   constructor(private _plt: Platform, private toastController: ToastController) {
     this._plt.ready().then( async () => {
       // Depending on the machine the app is running on, configure
       // different database connections
       if (this._plt.is('cordova')) {
+        console.log("Platform is Cordova");
         // Running on device or emulator
         this._connection = await createConnection({
           type: 'cordova',
@@ -72,6 +73,7 @@ export class DatabaseService {
         });
       } else {
         // Running app in browser
+        console.log("Platform is not Cordova");
         this._connection = await createConnection({
           type: 'sqljs',
           autoSave: true,
@@ -107,56 +109,54 @@ export class DatabaseService {
 
   }
 
-  private async loadHistory(): Promise<IWorkoutHistoryItem[]> {
-    const history: IWorkoutHistoryItem[] = [];
-    try {
-      const queryResult = await this._db.executeSql("Select * FROM history", []);
-      if (queryResult.rows.length > 0) {
-
-      }
-    }
-    catch (e) {
-      console.error("Retrieving History from Database failed", e);
-    }
+  private async loadHistory(): Promise<WorkoutHistoryItem[]> {
+    const history: WorkoutHistoryItem[] = [];
+    const historyRepo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    const loadedHistory = await historyRepo.createQueryBuilder('history')
+        .innerJoinAndSelect('history.workout', 'workout')
+        .getMany();
+    console.log("History loaded from DB:", historyRepo, loadedHistory);
     return history;
   }
 
-  private async loadWorkouts(): Promise<IWorkout[]> {
-    const history: IWorkoutHistoryItem[] = [];
+  private async loadWorkouts(): Promise<Workout[]> {
+    const workoutRepo = getRepository("workout") as Repository<Workout>;
+    const workouts = workoutRepo.find();
+    console.log("Workouts loaded from DB:", workoutRepo, workouts);
     return [];
   }
 
-  private async loadTrainingPlans(): Promise<ITrainingPlan[]> {
+  private async loadTrainingPlans(): Promise<TrainingPlan[]> {
     const trainingPlans: ITrainingPlan[] = [];
     return trainingPlans;
   }
 
-  private async loadTrainingDays(): Promise<ITrainingDay[]> {
+  private async loadTrainingDays(): Promise<TrainingDay[]> {
     const trainingDays: ITrainingDay[] = [];
     return trainingDays;
   }
 
-  public async addHistoryItem(item: IWorkoutHistoryItem) {
+  public async addHistoryItem(item: WorkoutHistoryItem) {
     return [];
   }
 
-  public async deleteHistoryItem(item: IWorkoutHistoryItem) {
+  public async deleteHistoryItem(item: WorkoutHistoryItem) {
 
   }
 
-  public async addTrainingPlan(plan: ITrainingPlan) {
+  public async addTrainingPlan(plan: TrainingPlan) {
 
   }
 
-  public async deleteTrainingPlan(plan: ITrainingPlan) {
+  public async deleteTrainingPlan(plan: TrainingPlan) {
 
   }
 
-  public async addTrainingDay(plan: ITrainingPlan) {
+  public async addTrainingDay(plan: TrainingPlan) {
 
   }
 
-  public async deleteTrainingDay(plan: ITrainingPlan) {
+  public async deleteTrainingDay(plan: TrainingPlan) {
 
   }
 

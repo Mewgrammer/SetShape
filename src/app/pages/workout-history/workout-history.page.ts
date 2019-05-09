@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {ActivatedRoute} from '@angular/router';
 import {EWorkoutType, IWorkoutHistoryItem} from '../../resources/models/interfaces';
+import {WorkoutHistoryItem} from '../../resources/models/entities';
 
 @Component({
   selector: 'app-workout-history',
@@ -34,7 +35,7 @@ export class WorkoutHistoryPage implements OnInit {
     
   }
 
-  removeItem(item: IWorkoutHistoryItem) {
+  removeItem(item: WorkoutHistoryItem) {
     this._dataService.removeHistoryItem(item);
   }
 }

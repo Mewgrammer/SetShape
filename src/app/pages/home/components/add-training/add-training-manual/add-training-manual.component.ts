@@ -3,7 +3,8 @@ import {Router} from '@angular/router';
 import {DataService} from '../../../../../services/data.service';
 import {PopoverController, ToastController} from '@ionic/angular';
 import {EWorkoutType, ITrainingDay, IWorkout} from '../../../../../resources/models/interfaces';
-import {TrainingDay, TrainingPlan} from '../../../../../resources/models/entities';
+import {TrainingDay, TrainingPlan, Workout} from '../../../../../resources/models/entities';
+import {DataFactory} from '../../../../../resources/factory';
 
 @Component({
   selector: 'app-add-training-manual',
@@ -45,19 +46,15 @@ export class AddTrainingManualComponent implements OnInit {
   }
 
   onAddDayClick() {
-    const workouts: IWorkout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
-    const newDay: ITrainingDay = new TrainingDay();
-    newDay.name = this.dayName;
-    newDay.workouts = workouts;
+    const workouts: Workout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
+    const newDay = DataFactory.createTrainingDay(this.dayName, workouts);
     console.log("New Day", newDay);
     this.days.push(newDay);
   }
 
   async onCreateTraining() {
     if(this.name && this.name.length > 0) {
-      const newTrainingPlan = new TrainingPlan();
-      newTrainingPlan.name = this.name;
-      newTrainingPlan.days = this.days;
+      const newTrainingPlan = DataFactory.createTrainingPlan(this.name, this.days);
       this._dataService.createTrainingPlan(newTrainingPlan);
       await this.presentToast();
       await this._router.navigateByUrl("/change");

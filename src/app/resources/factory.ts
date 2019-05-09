@@ -27,7 +27,7 @@ export class DataFactory {
     public static createWorkoutHistoryItem(workout: Workout) {
         const item = new WorkoutHistoryItem();
         item.id = DataFactory.WorkoutId++;
-        item.date = new Date();
+        item.Date = new Date();
         item.workout = workout;
         return item;
     }

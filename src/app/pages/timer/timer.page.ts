@@ -10,7 +10,7 @@ export class TimerPage implements OnInit, AfterViewInit {
 
   public passedTime: TimeSpan;
   public startDate: Date;
-  private dateUpdater: number = 0;
+  public dateUpdater: number = 0;
 
   constructor() { }
 

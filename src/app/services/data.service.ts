@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
 import {TestData} from '../resources/testdata';
 import {DatabaseService} from './database.service';
+import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from '../resources/models/entities';
+import {DataFactory} from '../resources/factory';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private _trainingPlans: ITrainingPlan[] = [];
-  private _currentTrainingPlan: ITrainingPlan;
-  private _workoutHistory: IWorkoutHistoryItem[];
-  private _workouts: IWorkout[];
+  private _trainingPlans: TrainingPlan[] = [];
+  private _currentTrainingPlan: TrainingPlan;
+  private _workoutHistory: WorkoutHistoryItem[];
+  private _workouts: Workout[];
 
   public get TrainingPlans() {
     return [...this._trainingPlans];
@@ -40,16 +42,16 @@ export class DataService {
     this._currentTrainingPlan.days.push(day);
   }
 
-  public createTrainingPlan(plan: ITrainingPlan) {
+  public createTrainingPlan(plan: TrainingPlan) {
     this._trainingPlans.push(plan);
   }
 
-  public changeTrainingPlan(plan: ITrainingPlan) {
+  public changeTrainingPlan(plan: TrainingPlan) {
     this._currentTrainingPlan = {...plan};
     console.log("Current Trainingplan Changed", this._currentTrainingPlan);
   }
 
-  public removeTrainingPlan(plan: ITrainingPlan) {
+  public removeTrainingPlan(plan: TrainingPlan) {
     const matchingPlan = this._trainingPlans.find(p => p.id == plan.id);
     if(matchingPlan != null) {
       this._trainingPlans.splice(this._trainingPlans.indexOf(matchingPlan), 1);
@@ -60,7 +62,7 @@ export class DataService {
     }
   }
 
-  public removeTrainingDay(day: ITrainingDay) {
+  public removeTrainingDay(day: TrainingDay) {
     const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
     if(matchingDay != null) {
       this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
@@ -68,15 +70,15 @@ export class DataService {
     }
   }
 
-  public removeHistoryItem(item: IWorkoutHistoryItem) {
-    const match = this._workoutHistory.find(i => i.date == item.date && i.workout.id == item.workout.id);
+  public removeHistoryItem(item: WorkoutHistoryItem) {
+    const match = this._workoutHistory.find(i => i.Date == item.Date && i.workout.id == item.workout.id);
     if(match != null) {
       this._workoutHistory.splice(this._workoutHistory.indexOf(match), 1);
       console.log("Removed HistoryItem", match, this._workoutHistory);
     }
   }
 
-  public removeWorkoutFromDay(workout: IWorkout, day: ITrainingDay) {
+  public removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
     const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
     if(matchingDay != null) {
       const dayIndex = this._currentTrainingPlan.days.indexOf(matchingDay);
@@ -89,10 +91,7 @@ export class DataService {
     }
   }
 
-  addHistoryItem(workout: IWorkout) {
-    this._workoutHistory.push({
-      date: new Date(),
-      workout: {...workout}
-    });
+  addHistoryItem(workout: Workout) {
+    this._workoutHistory.push(DataFactory.createWorkoutHistoryItem(workout));
   }
 }

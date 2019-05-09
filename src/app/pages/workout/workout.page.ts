@@ -13,7 +13,7 @@ import {Workout} from '../../resources/models/entities';
 })
 export class WorkoutPage implements OnInit {
 
-  public workout: IWorkout;
+  public workout: Workout;
   private workoutType: EWorkoutType;
 
   constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController, public navCtrl: NavController) {

@@ -3,7 +3,8 @@ import {Router} from '@angular/router';
 import {NavController} from '@ionic/angular';
 import {DataService} from '../../../../services/data.service';
 import {EWorkoutType, ITrainingDay, IWorkout} from '../../../../resources/models/interfaces';
-import {TrainingDay} from '../../../../resources/models/entities';
+import {TrainingDay, Workout} from '../../../../resources/models/entities';
+import {DataFactory} from '../../../../resources/factory';
 
 @Component({
   selector: 'app-add-training-day',
@@ -35,11 +36,9 @@ export class AddTrainingDayComponent implements OnInit {
   async onAddDayClick() {
     console.log("Name",this.name);
     console.log("Selected Workouts", this.selectedWorkouts);
-    const workouts: IWorkout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
+    const workouts: Workout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
     console.log("Workouts", workouts);
-    let newDay: ITrainingDay = new TrainingDay();
-    newDay.name = this.name;
-    newDay.workouts = workouts;
+    let newDay: ITrainingDay = DataFactory.createTrainingDay(this.name, workouts);
     console.log("New Day", newDay);
     this._dataService.addDayToCurrentTrainingPlan(newDay);
     await this.router.navigateByUrl("/");

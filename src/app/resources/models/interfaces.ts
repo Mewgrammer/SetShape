@@ -28,6 +28,7 @@ export interface IWorkout {
 
 
 export interface IWorkoutHistoryItem {
+    Date: Date; // getter/setter
     workout?: IWorkout,
-    date: Date
+    timestamp: string
 }

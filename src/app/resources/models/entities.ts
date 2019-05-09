@@ -66,11 +66,19 @@ export class WorkoutHistoryItem implements IWorkoutHistoryItem{
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column("string")
-    public date: Date;
+    @Column()
+    public timestamp: string;
 
     @OneToOne(type => Workout, workout => workout.id)
     public workout: IWorkout;
+
+    public get Date() {
+        return new Date(Date.parse(this.timestamp));
+    }
+
+    public set Date(date: Date) {
+        this.timestamp = date.toDateString();
+    }
 
 
 }

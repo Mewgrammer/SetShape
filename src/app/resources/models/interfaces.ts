@@ -1,5 +1,6 @@
 export interface ITrainingPlan {
     id: number;
+    active: boolean;
     name: string;
     days: ITrainingDay[];
 }

@@ -3,8 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
-    <ion-title>
+    <ion-title *ngIf="History && History.length > 0">
       {{"History "+ History[0].workout.name}}
+    </ion-title>
+    <ion-title *ngIf="!History || History.length == 0">
+      {{"History"}}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="presentPopover($event)">

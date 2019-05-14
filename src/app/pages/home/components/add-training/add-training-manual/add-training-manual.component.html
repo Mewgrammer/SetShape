@@ -66,7 +66,7 @@
           </ion-item>
         </ion-card-content>
       </ion-card>
-      <ion-button size="large" color="warning" (click)="onCreateTraining()">Training Hinzufügen</ion-button>
+      <ion-button size="large" color="warning" (click)="onCreateTraining()" [disabled]="name == null || name.length == 0">Training Hinzufügen</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

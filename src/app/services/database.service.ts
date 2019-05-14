@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import {SQLiteObject} from '@ionic-native/sqlite';
 import {BehaviorSubject} from 'rxjs';
 import {Platform, ToastController} from '@ionic/angular';
-import {SQLite} from '@ionic-native/sqlite/ngx';
-import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
 import {Connection, createConnection, getRepository, Repository} from 'typeorm';
 import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from '../resources/models/entities';
+import {TestData} from '../resources/testdata';
 
 @Injectable({
   providedIn: 'root'
@@ -44,11 +43,18 @@ export class DatabaseService {
     return this._trainingPlans;
   }
 
+  public get ActivePlan() {
+    if(this._activeTrainingPlan == null)
+      this._activeTrainingPlan = this.findActiveTrainingPlan();
+    return this._activeTrainingPlan;
+  }
+
   private _connection: Connection;
 
   private _trainingDays: Promise<TrainingDay[]>;
   private _history: Promise<WorkoutHistoryItem[]>;
   private _workouts:  Promise<Workout[]>;
+  private _activeTrainingPlan:  Promise<TrainingPlan>;
   private _trainingPlans:  Promise<TrainingPlan[]>;
 
   constructor(private _plt: Platform, private toastController: ToastController) {
@@ -70,6 +76,10 @@ export class DatabaseService {
             TrainingPlan,
             WorkoutHistoryItem,
           ]
+        });
+        this.loadData().then(() => {
+          console.log("Database Ready");
+          this.dbReady.next(true);
         });
       } else {
         // Running app in browser
@@ -97,7 +107,7 @@ export class DatabaseService {
 
     }).catch( async  (err) => {
       const toast = await this.toastController.create({
-        message: 'Db Connection failed!',
+        message: 'Db Connection failed! ' + err.message,
         duration: 2000
       });
       toast.present();
@@ -105,63 +115,173 @@ export class DatabaseService {
     });
   }
 
-  private async connectDatabase() {
+  private async loadData() {
+    try {
+      let workouts = await this._connection.manager.find(Workout);
+      if(workouts.length == 0) {
+        await this.addWorkouts(TestData.workouts);
+        console.log("Added default Workouts");
+      }
+      workouts = await this.loadWorkouts();
+      const history = await this.loadHistory();
+      const days = await this.loadTrainingDays();
+      const plans = await this.loadTrainingPlans();
 
+      console.log("Workouts", workouts);
+      console.log("Days", days);
+      console.log("Plans", plans);
+      console.log("History", history);
+    }
+    catch (e) {
+      console.error(e);
+    }
   }
 
+  // *****************************************************************************
+  // History Item
+  // *****************************************************************************
   private async loadHistory(): Promise<WorkoutHistoryItem[]> {
-    const history: WorkoutHistoryItem[] = [];
-    const historyRepo = getRepository("history") as Repository<WorkoutHistoryItem>;
-    const loadedHistory = await historyRepo.createQueryBuilder('history')
-        .innerJoinAndSelect('history.workout', 'workout')
-        .getMany();
-    console.log("History loaded from DB:", historyRepo, loadedHistory);
-    return history;
+    this._history = this._connection.manager.find(WorkoutHistoryItem, { relations: ["workout"]});
+    return this._history;
   }
-
-  private async loadWorkouts(): Promise<Workout[]> {
-    const workoutRepo = getRepository("workout") as Repository<Workout>;
-    const workouts = workoutRepo.find();
-    console.log("Workouts loaded from DB:", workoutRepo, workouts);
-    return [];
+  public async addHistoryItem(item: WorkoutHistoryItem): Promise<WorkoutHistoryItem> {
+    item.id = undefined; // Make sure Id is not set - it will be auto-generated
+    const addResult = await this._connection.manager.save(item);
+    console.log("WorkoutHistoryItem added", addResult);
+    return addResult;
   }
-
-  private async loadTrainingPlans(): Promise<TrainingPlan[]> {
-    const trainingPlans: ITrainingPlan[] = [];
-    return trainingPlans;
+  public async addHistoryItems(items: WorkoutHistoryItem[]) {
+    items = items.map(w => {
+      w.id = undefined;
+      return w;
+    });
+    const addResult = await this._connection.manager.save(items);
+    console.log("WorkoutHistoryItem added", addResult);
+    return addResult;
   }
-
-  private async loadTrainingDays(): Promise<TrainingDay[]> {
-    const trainingDays: ITrainingDay[] = [];
-    return trainingDays;
+  public async updateHistoryItem(updatedDay: TrainingDay) {
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    const updateResult = await repo.createQueryBuilder().update(TrainingDay)
+        .set(updatedDay)
+        .where("id = :id", { id: updatedDay.id })
+        .execute();
+    console.log("TrainingDay updated:", updateResult);
   }
-
-  public async addHistoryItem(item: WorkoutHistoryItem) {
-    return [];
-  }
-
   public async deleteHistoryItem(item: WorkoutHistoryItem) {
-
+    const deleteResult = this._connection.manager.delete(WorkoutHistoryItem, {id : item.id});
+    console.log("WorkoutHistoryItem deleted", deleteResult);
+    return  deleteResult;
   }
 
-  public async addTrainingPlan(plan: TrainingPlan) {
-
+  // *****************************************************************************
+  // Training Plan
+  // *****************************************************************************
+  private async loadTrainingPlans(): Promise<TrainingPlan[]> {
+    this._trainingPlans = this._connection.manager.find(TrainingPlan, { relations: ["days"]});
+    return this._trainingPlans;
   }
-
+  private async findActiveTrainingPlan(): Promise<TrainingPlan> {
+    return await this._connection.manager.findOne(TrainingPlan, { relations: ["days"], where: "active = true"});
+  }
+  public async addTrainingPlan(plan: TrainingPlan): Promise<TrainingPlan> {
+    plan.id = undefined; // Make sure Id is not set - it will be auto-generated
+    const addedEntity = await this._connection.manager.save(plan);
+    console.log("TrainingPlan added", addedEntity);
+    return addedEntity;
+  }
+  public async addTrainingPlans(plans: TrainingPlan[]) {
+    plans = plans.map(w => {
+      w.id = undefined;
+      return w;
+    });
+    const addResult = await this._connection.manager.save(plans);
+    console.log("TrainingPlan added", addResult);
+    return addResult;
+  }
+  public async updateTrainingPlan(updatedPlan: TrainingPlan) {
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    const updateResult = await repo.createQueryBuilder().update(TrainingPlan)
+        .set(updatedPlan)
+        .where("id = :id", { id: updatedPlan.id })
+        .execute();
+    console.log("TrainingPlan updated:", updateResult);
+  }
   public async deleteTrainingPlan(plan: TrainingPlan) {
+    const deleteResult = this._connection.manager.delete(TrainingPlan, {id : plan.id});
+    console.log("TrainingPlan deleted", deleteResult);
+    return  deleteResult;
 
   }
-
-  public async addTrainingDay(plan: TrainingPlan) {
-
+  
+  // *****************************************************************************
+  // Training Day
+  // *****************************************************************************
+  private async loadTrainingDays(): Promise<TrainingDay[]> {
+    this._trainingDays = this._connection.manager.find(TrainingDay, { relations: ["workouts"]});
+    return this._trainingDays;
+  }
+  public async addTrainingDay(day: TrainingDay) {
+    day.id = undefined; // Make sure Id is not set - it will be auto-generated
+    const addResult = await this._connection.manager.save(day);
+    console.log("Workout added", addResult);
+    return addResult;
+  }
+  public async addTrainingDays(days: TrainingDay[]) {
+    days = days.map(w => {
+      w.id = undefined;
+      return w;
+    });
+    const addResult = await this._connection.manager.save(days);
+    console.log("Workout added", addResult);
+    return addResult;
+  }
+  public async updateTrainingDay(updatedDay: TrainingDay) {
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    const updateResult = await repo.createQueryBuilder().update(TrainingDay)
+        .set(updatedDay)
+        .where("id = :id", { id: updatedDay.id })
+        .execute();
+    console.log("TrainingDay updated:", updateResult);
+  }
+  public async deleteTrainingDay(day: TrainingDay) {
+    const deleteResult = this._connection.manager.delete(TrainingDay, {id : day.id});
+    console.log("TrainingDay deleted", deleteResult);
+    return  deleteResult;
   }
 
-  public async deleteTrainingDay(plan: TrainingPlan) {
-
+  // *****************************************************************************
+  // Workout
+  // *****************************************************************************
+  private async loadWorkouts(): Promise<Workout[]> {
+    this._workouts = this._connection.manager.find(Workout);
+    return this._workouts;
   }
-
-  public async addWorkout(workout: IWorkout) {
-
+  public async addWorkout(workout: Workout) {
+    workout.id = undefined; // Make sure Id is not set - it will be auto-generated
+    const addResult = await this._connection.manager.save(workout);
+    console.log("Workout added", addResult);
+    return addResult;
   }
-
+  public async addWorkouts(workouts: Workout[]) {
+    workouts = workouts.map(w => {
+      w.id = undefined;
+      return w;
+    });
+    const addResult = await this._connection.manager.save(workouts);
+    console.log("Workout added", addResult);
+    return addResult;
+  }
+  public async deleteWorkout(workout: Workout) {
+    const deleteResult = this._connection.manager.delete(Workout, {id : workout.id});
+    console.log("Workout deleted", deleteResult);
+    return  deleteResult;
+  }
+  public async updateWorkout(workout: Workout) {
+    const repo = getRepository("workout") as Repository<Workout>;
+    const updateResult = await repo.createQueryBuilder().update(Workout)
+        .set(workout)
+        .where("id = :id", { id: workout.id })
+        .execute();
+    console.log("Workout updated:", updateResult);
+  }
 }

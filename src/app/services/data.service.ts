@@ -11,9 +11,9 @@ import {DataFactory} from '../resources/factory';
 export class DataService {
 
   private _trainingPlans: TrainingPlan[] = [];
-  private _currentTrainingPlan: TrainingPlan;
-  private _workoutHistory: WorkoutHistoryItem[];
-  private _workouts: Workout[];
+  private _currentTrainingPlan: TrainingPlan = null;
+  private _workoutHistory: WorkoutHistoryItem[] = [];
+  private _workouts: Workout[] = [];
 
   public get TrainingPlans() {
     return [...this._trainingPlans];
@@ -32,28 +32,50 @@ export class DataService {
   }
 
   constructor(private _databaseService: DatabaseService) {
+    this.loadData();
+  }
+
+  public loadTestData() {
     this._trainingPlans = [TestData.plan];
     this._currentTrainingPlan = this._trainingPlans[0];
     this._workoutHistory = TestData.history;
     this._workouts = TestData.workouts;
+
   }
 
-  public addDayToCurrentTrainingPlan(day: ITrainingDay) {
+  public async loadData() {
+    this._databaseService.dbReady.subscribe(async (status) => {
+      this._trainingPlans = await this._databaseService.TrainingPlans;
+      this._currentTrainingPlan = await this._databaseService.ActivePlan;
+      this._workoutHistory = await this._databaseService.History;
+      this._workouts = await this._databaseService.Workouts;
+      console.log("Data Service ready");
+    });
+  }
+
+  public async addDayToCurrentTrainingPlan(day: TrainingDay) {
     this._currentTrainingPlan.days.push(day);
+    await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
   }
 
-  public createTrainingPlan(plan: TrainingPlan) {
-    this._trainingPlans.push(plan);
+  public async createTrainingPlan(plan: TrainingPlan) {
+    const addedPlan = await this._databaseService.addTrainingPlan(plan);
+    this._trainingPlans.push(addedPlan);
   }
 
-  public changeTrainingPlan(plan: TrainingPlan) {
+  public async changeTrainingPlan(plan: TrainingPlan) {
+    this._currentTrainingPlan.active = false;
+    plan.active = true;
+    await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
+    await this._databaseService.updateTrainingPlan(plan);
     this._currentTrainingPlan = {...plan};
     console.log("Current Trainingplan Changed", this._currentTrainingPlan);
   }
 
-  public removeTrainingPlan(plan: TrainingPlan) {
+  public async removeTrainingPlan(plan: TrainingPlan) {
     const matchingPlan = this._trainingPlans.find(p => p.id == plan.id);
     if(matchingPlan != null) {
+      const deleteResult = await this._databaseService.deleteTrainingPlan(plan);
       this._trainingPlans.splice(this._trainingPlans.indexOf(matchingPlan), 1);
       console.log("Removed Training", matchingPlan, this._trainingPlans);
       if(this._currentTrainingPlan.id == plan.id) {
@@ -62,23 +84,25 @@ export class DataService {
     }
   }
 
-  public removeTrainingDay(day: TrainingDay) {
+  public async removeTrainingDay(day: TrainingDay) {
     const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
     if(matchingDay != null) {
+      const deleteResult = await this._databaseService.deleteTrainingDay(day);
       this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
       console.log("Removed TrainingDay", matchingDay, this._currentTrainingPlan.days);
     }
   }
 
-  public removeHistoryItem(item: WorkoutHistoryItem) {
-    const match = this._workoutHistory.find(i => i.Date == item.Date && i.workout.id == item.workout.id);
+  public async removeHistoryItem(item: WorkoutHistoryItem) {
+    const match = this._workoutHistory.find(i => i.id == item.id);
     if(match != null) {
+      const deleteResult = await this._databaseService.deleteHistoryItem(item);
       this._workoutHistory.splice(this._workoutHistory.indexOf(match), 1);
       console.log("Removed HistoryItem", match, this._workoutHistory);
     }
   }
 
-  public removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
+  public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
     const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
     if(matchingDay != null) {
       const dayIndex = this._currentTrainingPlan.days.indexOf(matchingDay);
@@ -86,12 +110,15 @@ export class DataService {
       if(matchingWorkout) {
         const workoutIndex =  this._currentTrainingPlan.days[dayIndex].workouts.indexOf(matchingWorkout);
         this._currentTrainingPlan.days[dayIndex].workouts.splice(workoutIndex, 1);
+        const updateResult = await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
         console.log("Removed Workout", workout,  this._currentTrainingPlan.days[dayIndex].workouts);
       }
     }
   }
 
-  addHistoryItem(workout: Workout) {
-    this._workoutHistory.push(DataFactory.createWorkoutHistoryItem(workout));
+  public async addHistoryItem(workout: Workout) {
+    const addedItem = await this._databaseService.addHistoryItem(DataFactory.createWorkoutHistoryItem(workout))
+    this._workoutHistory.push(addedItem);
+  
   }
 }

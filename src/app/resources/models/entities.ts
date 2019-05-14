@@ -1,9 +1,9 @@
 import {EWorkoutType, ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from './interfaces';
-import {Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 
 
 @Entity('workout')
-export class Workout implements IWorkout{
+export class Workout implements IWorkout {
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -22,6 +22,12 @@ export class Workout implements IWorkout{
     @Column()
     public weight: number;
 
+    @ManyToOne(type => TrainingDay, day => day.workouts)
+    public trainingDay?: TrainingDay;
+
+    @OneToMany(type => WorkoutHistoryItem, item => item.workout, {cascade: true})
+    public workoutHistoryItem?: WorkoutHistoryItem;
+
     public static create(w: IWorkout): Workout {
         const workout = new Workout();
         workout.type = w.type;
@@ -31,7 +37,6 @@ export class Workout implements IWorkout{
         workout.weight = w.weight;
         return workout;
     }
-
 }
 
 @Entity('trainingPlan')
@@ -40,36 +45,44 @@ export class TrainingPlan implements ITrainingPlan{
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @OneToMany(type => TrainingDay, trainingDay => trainingDay.id)
+    @OneToMany(type => TrainingDay, trainingDay => trainingDay.trainingPlan, { cascade: true, eager: true })
     public days: ITrainingDay[];
 
     @Column()
     public name: string;
 
+    @Column()
+    public active: boolean;
+
+
 }
 
 @Entity('trainingDay')
-export class TrainingDay implements ITrainingDay{
+export class TrainingDay implements ITrainingDay {
     @PrimaryGeneratedColumn()
     public id: number;
 
     @Column()
     public name: string;
 
-    @OneToMany(type => Workout, workout => workout.id)
+    @OneToMany(type => Workout, workout => workout.trainingDay, { cascade: true, eager: true })
     public workouts: IWorkout[];
+
+    @ManyToOne(type => TrainingPlan, plan => plan.days )
+    public trainingPlan?: TrainingPlan;
 
 }
 
-@Entity('historyItem')
+@Entity('history')
 export class WorkoutHistoryItem implements IWorkoutHistoryItem{
+
     @PrimaryGeneratedColumn()
     public id: number;
 
     @Column()
     public timestamp: string;
 
-    @OneToOne(type => Workout, workout => workout.id)
+    @ManyToOne(type => Workout, workout => workout.workoutHistoryItem, { eager: true })
     public workout: IWorkout;
 
     public get Date() {

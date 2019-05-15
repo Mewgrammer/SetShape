@@ -28,34 +28,15 @@
 
     <ion-content color="dark" *ngIf="day.workouts && day.workouts.length > 0">
         <div *ngFor="let workout of day.workouts">
-        <ion-card color="warning" *ngIf="!WorkoutIsFinished(workout)">
-          <ion-card-header color="warning" >
-            <ion-card-title>
-              <ion-item-sliding>
-                <ion-item color="warning" (click)="onWorkoutClick(workout)">
-                  <h5>
-                    {{workout.name}}
-                  </h5>
-                </ion-item>
-                <ion-item-options>
-                  <ion-button color="danger" (click)="removeWorkout(workout)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
-                </ion-item-options>
-              </ion-item-sliding>
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-          </ion-card-content>
-        </ion-card>
-      
-        <ion-card color="success" *ngIf="WorkoutIsFinished(workout)">
-            <ion-card-header color="success"  >
+          <ion-card color="warning" *ngIf="!WorkoutIsFinished(workout)" (click)="onWorkoutClick(workout)">
+            <ion-card-header color="warning" >
               <ion-card-title>
                 <ion-item-sliding>
-                    <ion-item color="success" (click)="onWorkoutClick(workout)">
-                        <h5>
-                          {{workout.name}}
-                        </h5>
-                    </ion-item>
+                  <ion-item color="warning">
+                    <h5>
+                      {{workout.name}}
+                    </h5>
+                  </ion-item>
                   <ion-item-options>
                     <ion-button color="danger" (click)="removeWorkout(workout)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
                   </ion-item-options>
@@ -65,6 +46,25 @@
             <ion-card-content>
             </ion-card-content>
           </ion-card>
+        
+          <ion-card color="success" *ngIf="WorkoutIsFinished(workout)" (click)="onWorkoutClick(workout)">
+              <ion-card-header color="success"  >
+                <ion-card-title>
+                  <ion-item-sliding>
+                      <ion-item color="success">
+                          <h5>
+                            {{workout.name}}
+                          </h5>
+                      </ion-item>
+                    <ion-item-options>
+                      <ion-button color="danger" (click)="removeWorkout(workout)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+                    </ion-item-options>
+                  </ion-item-sliding>
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+              </ion-card-content>
+            </ion-card>
           </div>
       </ion-content>      
 

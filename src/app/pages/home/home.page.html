@@ -16,9 +16,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!TrainingPlan">
-  <ion-card color="dark">
-    <ion-card-header color="dark">
+<ion-content color="warning" *ngIf="!TrainingPlan">
+  <ion-card color="warning">
+    <ion-card-header color="warning">
       <ion-button size="large" color="warning" (click)="onChangeTraining()">Ein Training auswählen</ion-button>
     </ion-card-header>
     <ion-card-content>
@@ -26,12 +26,12 @@
   </ion-card>
 </ion-content>
 
-<ion-content color="dark" *ngIf="TrainingPlan">
-  <ion-card color="dark" *ngFor="let day of TrainingDays">
-    <ion-card-header color="dark">
+<ion-content class="TrainingDay" color="dark" *ngIf="TrainingPlan">
+  <ion-card color="warning" *ngFor="let day of TrainingDays">
+    <ion-card-header color="warning">
       <ion-card-title>
         <ion-item-sliding>
-          <ion-item color="dark" (click)="onDayClick(day)">
+          <ion-item color="warning" (click)="onDayClick(day)">
             <h5>
               {{day.name}}
             </h5>

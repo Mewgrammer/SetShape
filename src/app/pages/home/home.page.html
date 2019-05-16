@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="dark">
+  <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
     <ion-title>
       <span *ngIf="!TrainingPlan">
         Home
@@ -16,9 +16,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!TrainingPlan">
-  <ion-card color="dark">
-    <ion-card-header color="dark">
+<ion-content color="warning" *ngIf="!TrainingPlan">
+  <ion-card color="warning">
+    <ion-card-header color="warning">
       <ion-button size="large" color="warning" (click)="onChangeTraining()">Ein Training auswählen</ion-button>
     </ion-card-header>
     <ion-card-content>
@@ -26,23 +26,25 @@
   </ion-card>
 </ion-content>
 
-<ion-content color="dark" *ngIf="TrainingPlan">
-  <ion-card color="dark" *ngFor="let day of TrainingDays">
-    <ion-card-header color="dark">
-      <ion-card-title>
-        <ion-item-sliding>
-          <ion-item color="dark" (click)="onDayClick(day)">
-            <h5>
-              {{day.name}}
-            </h5>
-          </ion-item>
-          <ion-item-options>
-            <ion-button color="danger" (click)="removeDay(day)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="TrainingDay" color="dark" *ngIf="TrainingPlan">
+  <div *ngFor="let day of TrainingDays">
+    <ion-card color="warning" (click)="onDayClick(day)">
+        <ion-card-header color="warning">
+          <ion-card-title>
+            <ion-item-sliding>
+              <ion-item color="warning">
+                <h5>
+                  {{day.name}}
+                </h5>
+              </ion-item>
+              <ion-item-options>
+                <ion-button color="danger" (click)="removeDay(day)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+        </ion-card-content>
+      </ion-card>
+  </div>
 </ion-content>

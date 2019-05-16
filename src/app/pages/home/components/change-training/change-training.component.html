@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="dark">
+  <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
     <ion-buttons slot="start">
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
@@ -17,11 +17,11 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content style="font-size: 18px;">
-      <ion-card color="dark" *ngFor="let training of Trainings" >
+      <ion-card color="warning" *ngFor="let training of Trainings" >
         <ion-card-header>
           <ion-card-title>
             <ion-item-sliding>
-              <ion-item color="dark" (click)="onSelectTraining(training)">
+              <ion-item color="warning" (click)="onSelectTraining(training)">
                 <h5>
                   {{training.name}}
                 </h5>

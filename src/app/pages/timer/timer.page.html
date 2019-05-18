@@ -8,19 +8,44 @@
 </ion-header>
 
 <ion-content color="dark">
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <h1>{{passedTime.toString()}}</h1>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-button size="large" color="primary" *ngIf="dateUpdater == 0" (click)="start()">Start</ion-button>
-        <ion-button size="large" color="danger"  *ngIf="dateUpdater != 0" (click)="stop()">Stop</ion-button>
-        <ion-button size="large" color="warning" (click)="reset()">Reset</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        
+  <ion-item color="dark">
+    <ion-label>Dauer:</ion-label>
+    <ion-datetime display-format="mm:ss" placeholder="Tap here" [(ngModel)]="fulltime"></ion-datetime>
+  </ion-item>
+
+
+  <circle-progress (click)="startTimer()"
+  [percent]="percent"
+  [maxPercent]="100"
+  [radius]="radius"
+  [showTitle]="false"
+  [showSubtitle]="false"
+  [showUnits]="false"
+  [outerStrokeWidth]="16"
+  [outerStrokeColor]="'#ffce00'"
+  [showZeroOuterStroke]="false"
+  [backgroundStroke]="'#3b3f00'"
+  [backgroundStrokeWidth]="3"
+  [outerStrokeGradient]="true"
+  [outerStrokeGradientStopColor]="'#ff9000'"
+  [showInnerStroke]="false"
+></circle-progress>
+<p>
+  {{ elapsed.h }}:{{ elapsed.m }}:{{ elapsed.s }}
+</p>
+
+<ion-fab vertical="bottom mb-5" horizontal="center" slot="fixed">
+  <ng-container *ngIf="timer==false, else running">
+    <ion-fab-button color="warning" (click)="startTimer()">
+      <ion-icon name="play"></ion-icon>
+    </ion-fab-button>
+  </ng-container>
+  <ng-template #running>
+    <ion-fab-button color="danger" (click)="stopTime()">
+      <ion-icon  name="square"></ion-icon>
+    </ion-fab-button>
+  </ng-template>
+</ion-fab>
 
 </ion-content>

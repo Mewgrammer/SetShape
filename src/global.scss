@@ -13,6 +13,7 @@
 
 $dark:  #222428;
 
+
 .bg-ionic-dark {
   background-color: #222428 !important;
 }
@@ -24,6 +25,23 @@ $dark:  #222428;
 // Make List items Dark
 .item-complex .item-content {
   background-color: #222428 !important;
+}
+
+.picker-toolbar.sc-ion-picker-ios {
+  border-bottom: 0;
+}
+
+.picker-wrapper.sc-ion-picker-ios {
+  border-top: 0;
+  background: #222428;
+}
+
+.picker-above-highlight.sc-ion-picker-ios, .picker-below-highlight.sc-ion-picker-ios {
+  background: rgba(0,0,0,.5);
+}
+
+.picker-opt {
+  color: white;
 }
 
 

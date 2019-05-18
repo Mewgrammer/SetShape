@@ -64,7 +64,7 @@ export class WorkoutPage implements OnInit {
     await this.presentToast();
     await this._dataService.addHistoryItem(this.workout);
     if(this._dataService.CurrentDay != null) {
-      await this._router.navigateByUrl("/trainingDay/" + this._dataService.CurrentDay.id);
+      await this._router.navigateByUrl("/training-day/" + this._dataService.CurrentDay.id);
     }
   }
 

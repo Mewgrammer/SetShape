@@ -10,11 +10,20 @@ import {TestData} from '../resources/testdata';
   providedIn: 'root'
 })
 export class DatabaseService {
-
-  private _db: SQLiteObject;
-
+  
+  private _connection: Connection;
+  private _trainingDays: Promise<TrainingDay[]>;
+  private _history: Promise<WorkoutHistoryItem[]>;
+  private _workouts:  Promise<Workout[]>;
+  private _activeTrainingPlan:  Promise<TrainingPlan>;
+  private _trainingPlans:  Promise<TrainingPlan[]>;
+  
   public dbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
+  
+  private get Connected() {
+    return this._connection != null && this._connection.isConnected && this._connection.manager != null;
+  }
+  
   public get History() {
     if(this._history == null) {
       this._history = this.loadHistory();
@@ -49,13 +58,6 @@ export class DatabaseService {
     return this._activeTrainingPlan;
   }
 
-  private _connection: Connection;
-
-  private _trainingDays: Promise<TrainingDay[]>;
-  private _history: Promise<WorkoutHistoryItem[]>;
-  private _workouts:  Promise<Workout[]>;
-  private _activeTrainingPlan:  Promise<TrainingPlan>;
-  private _trainingPlans:  Promise<TrainingPlan[]>;
 
   constructor(private _plt: Platform, private toastController: ToastController) {
     this._plt.ready().then( async () => {
@@ -65,6 +67,7 @@ export class DatabaseService {
         console.log("Platform is Cordova");
         // Running on device or emulator
         this._connection = await createConnection({
+          name: "default",
           type: 'cordova',
           database: 'set_shape',
           location: 'default',
@@ -114,12 +117,14 @@ export class DatabaseService {
       console.error("Failed to created Database", err);
     });
   }
+  
+
 
   private async loadData() {
     try {
-      if(!this._connection.isConnected || this._connection.manager == null) {
-        console.log("DB not connected - retrying to load data in 1 second...");
-        setTimeout(() => this.loadData(), 1000);
+      if(!this.Connected) {
+        console.log("DB not connected - retrying to load data in 5 seconds...");
+        setTimeout(() => this.loadData(), 5000);
         return;
       }
       console.log("Loading Data...");
@@ -149,9 +154,7 @@ export class DatabaseService {
   // History Item
   // *****************************************************************************
   private async loadHistory(): Promise<WorkoutHistoryItem[]> {
-    if(!this._connection.isConnected || this._connection.manager == null) {
-      return  [];
-    }
+    if(!this.Connected) return  [];
     const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
     this._history = repo.find({relations: ["workout"]});
     // this._history = this._connection.manager.find(WorkoutHistoryItem, { relations: ["workout"]});
@@ -159,6 +162,7 @@ export class DatabaseService {
     return this._history;
   }
   public async addHistoryItem(item: WorkoutHistoryItem): Promise<WorkoutHistoryItem> {
+    if(!this.Connected) return null;
     item.id = undefined; // Make sure Id is not set - it will be auto-generated
     console.log("DB: adding History Item", item);
     const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
@@ -168,6 +172,7 @@ export class DatabaseService {
     return addResult;
   }
   public async addHistoryItems(items: WorkoutHistoryItem[]) {
+    if(!this.Connected) return null;
     items = items.map(w => {
       w.id = undefined;
       return w;
@@ -179,12 +184,14 @@ export class DatabaseService {
     return addResult;
   }
   public async updateHistoryItem(updatedDay: TrainingDay) {
+    if(!this.Connected) return null;
     const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
     const updateResult = await repo.save(updatedDay);
     console.log("DB: TrainingDay updated:", updateResult);
     this._history = this.loadHistory();
   }
   public async deleteHistoryItem(item: WorkoutHistoryItem) {
+    if(!this.Connected) return null;
     const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
     const deleteResult = await repo.delete({id: item.id});
     console.log("DB: WorkoutHistoryItem deleted", deleteResult);
@@ -197,20 +204,20 @@ export class DatabaseService {
   // Training Plan
   // *****************************************************************************
   private async loadTrainingPlans(): Promise<TrainingPlan[]> {
-    if(!this._connection.isConnected || this._connection.manager == null) {
-      return  [];
-    }
+    if(!this.Connected) return  [];
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
     this._trainingPlans = repo.find({relations: ["days", "days.workouts"]});
     // this._trainingPlans = this._connection.manager.find(TrainingPlan, { relations: ["days"]});
     return this._trainingPlans;
   }
   private async findActiveTrainingPlan(): Promise<TrainingPlan> {
+    if(!this.Connected) return null;
     console.log("Find Active TrainingPlan");
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
     return await repo.findOne({active: true}, { relations: ["days", "days.workouts"]});
   }
   public async addTrainingPlan(plan: TrainingPlan): Promise<TrainingPlan> {
+    if(!this.Connected) return null;
     plan.id = undefined; // Make sure Id is not set - it will be auto-generated
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
     const addedEntity = await repo.save(plan);
@@ -219,6 +226,7 @@ export class DatabaseService {
     return addedEntity;
   }
   public async addTrainingPlans(plans: TrainingPlan[]) {
+    if(!this.Connected) return null;
     plans = plans.map(w => {
       w.id = undefined;
       return w;
@@ -230,6 +238,7 @@ export class DatabaseService {
     return addResult;
   }
   public async updateTrainingPlan(updatedPlan: TrainingPlan) {
+    if(!this.Connected) return null;
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
     const updateResult = await repo.save(updatedPlan);
     console.log("DB:  TrainingPlan updated:", updateResult);
@@ -237,6 +246,7 @@ export class DatabaseService {
     this._activeTrainingPlan = this.findActiveTrainingPlan();
   }
   public async deleteTrainingPlan(plan: TrainingPlan) {
+    if(!this.Connected) return null;
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
     const deleteResult = repo.delete({id : plan.id});
     console.log("DB:  TrainingPlan deleted", deleteResult);
@@ -249,9 +259,7 @@ export class DatabaseService {
   // Training Day
   // *****************************************************************************
   private async loadTrainingDays(): Promise<TrainingDay[]> {
-    if(!this._connection.isConnected || this._connection.manager == null) {
-      return  [];
-    }
+    if(!this.Connected) return  [];
     // this._trainingDays = this._connection.manager.find(TrainingDay, { relations: ["workouts"]});
     const repo = getRepository("trainingDay") as Repository<TrainingDay>;
     this._trainingDays = repo.find({relations: ["workouts"]});
@@ -259,6 +267,7 @@ export class DatabaseService {
     return this._trainingDays;
   }
   public async addTrainingDay(day: TrainingDay) {
+    if(!this.Connected) return null;
     day.id = undefined; // Make sure Id is not set - it will be auto-generated
     const repo = getRepository("trainingDay") as Repository<TrainingDay>;
     const addResult = await repo.save(day);
@@ -267,6 +276,7 @@ export class DatabaseService {
     return addResult;
   }
   public async addTrainingDays(days: TrainingDay[]) {
+    if(!this.Connected) return null;
     days = days.map(w => {
       w.id = undefined;
       return w;
@@ -278,12 +288,14 @@ export class DatabaseService {
     return addResult;
   }
   public async updateTrainingDay(updatedDay: TrainingDay) {
+    if(!this.Connected) return null;
     const repo = getRepository("trainingDay") as Repository<TrainingDay>;
     const updateResult = await repo.save(updatedDay);
     console.log("DB: TrainingDay updated: ", updateResult);
     this._trainingDays = this.loadTrainingDays();
   }
   public async deleteTrainingDay(day: TrainingDay) {
+    if(!this.Connected) return null;
     const repo = getRepository("trainingDay") as Repository<TrainingDay>;
     const deleteResult = repo.delete({id : day.id});
     console.log("DB: TrainingDay deleted", deleteResult);
@@ -295,9 +307,8 @@ export class DatabaseService {
   // Workout
   // *****************************************************************************
   private async loadWorkouts(): Promise<Workout[]> {
-    if(!this._connection.isConnected || this._connection.manager == null) {
-      return  [];
-    }
+    if(!this.Connected) return [];
+  
     const repo = getRepository("workout") as Repository<Workout>;
     this._workouts = repo.find();
   
@@ -305,6 +316,7 @@ export class DatabaseService {
     return this._workouts;
   }
   public async addWorkout(workout: Workout) {
+    if(!this.Connected) return null;
     workout.id = undefined; // Make sure Id is not set - it will be auto-generated
     const repo = getRepository("workout") as Repository<Workout>;
     const addResult = await repo.save(workout);
@@ -313,6 +325,7 @@ export class DatabaseService {
     return addResult;
   }
   public async addWorkouts(workouts: Workout[]) {
+    if(!this.Connected) return null;
     workouts = workouts.map(w => {
       w.id = undefined;
       return w;
@@ -325,6 +338,7 @@ export class DatabaseService {
     return addResult;
   }
   public async deleteWorkout(workout: Workout) {
+    if(!this.Connected) return null;
     const repo = getRepository("workout") as Repository<Workout>;
     const deleteResult = repo.delete({id : workout.id});
     console.log("DB: Workout deleted", deleteResult);
@@ -332,6 +346,7 @@ export class DatabaseService {
     return  deleteResult;
   }
   public async updateWorkout(workout: Workout) {
+    if(!this.Connected) return null;
     const repo = getRepository("workout") as Repository<Workout>;
     const updateResult = await repo.save(workout);
     console.log("DB: Workout updated:", updateResult);

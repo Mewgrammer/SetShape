@@ -26,13 +26,17 @@ export class HomePage implements OnInit{
   constructor(private _dataService: DataService, private _dbService: DatabaseService, private _router: Router,  public popoverController: PopoverController) {}
 
   async ngOnInit() {
-    if(this.TrainingPlan == null) {
-      await this._router.navigateByUrl(this._router.url + "/change");
-    }
-    this._dbService.dbReady.subscribe( (ready) => {
+
+    this._dbService.dbReady.subscribe( async (ready) => {
       this.appReady = ready;
+      if(this.TrainingPlan == null) {
+        await this._router.navigateByUrl(this._router.url + "/change");
+      }
     });
     this.appReady = this._dbService.dbReady.value;
+    if(this.appReady && this.TrainingPlan == null) {
+      await this._router.navigateByUrl(this._router.url + "/change");
+    }
   }
 
   public async navigateToAddPage() {

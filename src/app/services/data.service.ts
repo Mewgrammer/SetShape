@@ -44,10 +44,17 @@ export class DataService {
   }
 
   public async loadData() {
-    this._databaseService.dbReady.subscribe(async (status) => {
+    console.log("DataService: Loading Data");
+    if(this._databaseService.dbReady.value) {
       await this.syncWithDatabase();
       console.log("Data Service ready");
-    });
+    }
+    else {
+      this._databaseService.dbReady.subscribe(async (status) => {
+        await this.syncWithDatabase();
+        console.log("Data Service ready");
+      });
+    }
   }
 
   public async addDayToCurrentTrainingPlan(day: TrainingDay) {

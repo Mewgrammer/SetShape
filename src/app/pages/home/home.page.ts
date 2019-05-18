@@ -34,7 +34,7 @@ export class HomePage implements OnInit{
       }
     });
     this.appReady = this._dbService.dbReady.value;
-    if(this.appReady && this.TrainingPlan == null) {
+    if(this.appReady == true && this.TrainingPlan == null) {
       await this._router.navigateByUrl(this._router.url + "/change");
     }
   }

@@ -24,11 +24,9 @@ export class WorkoutPage implements OnInit {
   ngOnInit() {
     try {
       this.workoutType = <EWorkoutType>parseInt(this.route.snapshot.paramMap.get('type'));
-      console.log("Workout - Type:", this.workoutType);
       if(this.workoutType != null) {
-        const match = this._dataService.Workouts.find(w => w.type == <number>this.workoutType);
-        this.workout = Workout.create(match);
-        console.log("Workout - ", this.workout);
+        this.workout = this._dataService.Workouts.find(w => w.type == <number>this.workoutType);
+        this._dataService.CurrentWorkout = this.workout;
       }
     }
     catch (e) {
@@ -64,8 +62,10 @@ export class WorkoutPage implements OnInit {
 
   async onFinish() {
     await this.presentToast();
-    this._dataService.addHistoryItem(this.workout);
-    this.navCtrl.back();
+    await this._dataService.addHistoryItem(this.workout);
+    if(this._dataService.CurrentDay != null) {
+      await this._router.navigateByUrl("/trainingDay/" + this._dataService.CurrentDay.id);
+    }
   }
 
   onDecrementSets() {

@@ -14,7 +14,22 @@ export class DataService {
   private _currentTrainingPlan: TrainingPlan = null;
   private _workoutHistory: WorkoutHistoryItem[] = [];
   private _workouts: Workout[] = [];
+  private _currentWorkout: Workout = null;
+  private _currentDay: TrainingDay = null;
 
+  
+  public  get CurrentWorkout() {
+    return this._currentWorkout;
+  }
+  public set CurrentWorkout(workout: Workout) {
+    this._currentWorkout = workout;
+  }
+  public get CurrentDay() {
+    return this._currentDay;
+  }
+  public set CurrentDay(day: TrainingDay) {
+    this._currentDay = day;
+  }
   public get TrainingPlans() {
     return [...this._trainingPlans];
   }
@@ -139,7 +154,7 @@ export class DataService {
   }
 
   public async addHistoryItem(workout: Workout) {
-    const addedItem = await this._databaseService.addHistoryItem(DataFactory.createWorkoutHistoryItem(workout))
+    const addedItem = await this._databaseService.addHistoryItem(DataFactory.createWorkoutHistoryItem(workout));
     this._workoutHistory.push(addedItem);
     await this.syncWithDatabase();
   }

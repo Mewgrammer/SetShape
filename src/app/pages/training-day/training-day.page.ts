@@ -24,10 +24,9 @@ export class TrainingDayPage implements OnInit {
   ngOnInit() {
     try {
       this.dayId = parseInt(this.route.snapshot.paramMap.get('id'));
-      console.log("Training Day - Id:", this.dayId);
       if(this.dayId != null) {
         this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
-        console.log("Training Day - ", this.day);
+        this._dataService.CurrentDay = this.day;
       }
     }
     catch (e) {

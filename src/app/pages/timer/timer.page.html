@@ -28,7 +28,7 @@
   [outerStrokeGradientStopColor]="'#ff9000'"
   [showInnerStroke]="false"
   [title]="passedTime.toString()"
-  titleFontSize="28"
+  titleFontSize="38"
   titleColor="#ffce00">
   </circle-progress>
 
@@ -39,8 +39,8 @@
       </ion-fab-button>
     </ng-container>
     <ng-template #running>
-      <ion-fab-button color="danger" (click)="stop()">
-        <ion-icon  name="square"></ion-icon>
+      <ion-fab-button color="warning" (click)="stop()">
+        <ion-icon name="pause"></ion-icon>
       </ion-fab-button>
     </ng-template>
   </ion-fab>

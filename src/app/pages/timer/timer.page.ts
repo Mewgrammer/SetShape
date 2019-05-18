@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {TimeSpan} from '../../resources/TimeSpan';
+import {Vibration, VibrationOriginal} from '@ionic-native/vibration';
 
 @Component({
   selector: 'app-timer',
@@ -39,11 +40,15 @@ export class TimerPage implements OnInit, AfterViewInit {
   private updateDate() {
     this.passedTime = new TimeSpan(new Date().getTime() - this.startDate.getTime());
     this.percent = Math.floor((this.passedTime.totalSeconds / this.targetTime.totalSeconds) * 100);
+    if(this.percent == 100) {
+      Vibration.vibrate([500, 500, 500, 500, 500, 500, 500, 500, 500]);
+    }
   }
   
   public stop() {
     clearInterval(this.dateUpdater);
     this.dateUpdater = 0;
+    Vibration.vibrate(0);
   }
   
   ngOnDestroy(): void {

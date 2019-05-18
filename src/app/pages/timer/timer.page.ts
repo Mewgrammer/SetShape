@@ -28,6 +28,7 @@ export class TimerPage implements OnInit, AfterViewInit {
   }
   
   public reset() {
+    this.percent = 0;
     this.startDate = new Date(Date.now());
     this.passedTime = TimeSpan.zero;
   }
@@ -39,7 +40,7 @@ export class TimerPage implements OnInit, AfterViewInit {
   private updateDate() {
     this.passedTime = new TimeSpan(new Date().getTime() - this.startDate.getTime());
     this.percent = Math.floor((this.passedTime.totalSeconds / this.targetTime.totalSeconds) * 100);
-    console.log("Percent:", this.percent);
+    console.log("Percent:", this.percent, this.passedTime.toString(), this.targetTime.toString());
   }
   
   public stop() {
@@ -55,7 +56,8 @@ export class TimerPage implements OnInit, AfterViewInit {
   onTargetTimeChanged() {
     this.reset();
     const parts = this.targetTimeInput.split(":");
-    this.targetTime = TimeSpan.fromTime(0, parseInt(parts[0]), parseInt(parts[1]));
-    console.log("Target Time Changed", this.targetTime);
+    console.log(parts);
+    this.targetTime = TimeSpan.fromTime( parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+    console.log("Target Time Changed", this.targetTimeInput, this.targetTime.toString());
   }
 }

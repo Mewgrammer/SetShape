@@ -8,14 +8,12 @@
 </ion-header>
 
 <ion-content color="dark">
-        
   <ion-item color="dark">
     <ion-label>Dauer:</ion-label>
-    <ion-datetime display-format="mm:ss" placeholder="Tap here" [(ngModel)]="fulltime"></ion-datetime>
+    <ion-datetime display-format="mm:ss" placeholder="Tap here" [(ngModel)]="targetTimeInput" (ionChange)="onTargetTimeChanged()"></ion-datetime>
   </ion-item>
 
-
-  <circle-progress (click)="startTimer()"
+  <circle-progress (click)="start()"
   [percent]="percent"
   [maxPercent]="100"
   [radius]="radius"
@@ -29,23 +27,22 @@
   [backgroundStrokeWidth]="3"
   [outerStrokeGradient]="true"
   [outerStrokeGradientStopColor]="'#ff9000'"
-  [showInnerStroke]="false"
-></circle-progress>
-<p>
-  {{ elapsed.h }}:{{ elapsed.m }}:{{ elapsed.s }}
-</p>
+  [showInnerStroke]="false">
+  </circle-progress>
+  <p>
+    {{ passedTime.toString() }}
+  </p>
 
-<ion-fab vertical="bottom mb-5" horizontal="center" slot="fixed">
-  <ng-container *ngIf="timer==false, else running">
-    <ion-fab-button color="warning" (click)="startTimer()">
-      <ion-icon name="play"></ion-icon>
-    </ion-fab-button>
-  </ng-container>
-  <ng-template #running>
-    <ion-fab-button color="danger" (click)="stopTime()">
-      <ion-icon  name="square"></ion-icon>
-    </ion-fab-button>
-  </ng-template>
-</ion-fab>
-
+  <ion-fab vertical="bottom mb-5" horizontal="center" slot="fixed">
+    <ng-container *ngIf="dateUpdater==0, else running">
+      <ion-fab-button color="warning" (click)="start()">
+        <ion-icon name="play"></ion-icon>
+      </ion-fab-button>
+    </ng-container>
+    <ng-template #running>
+      <ion-fab-button color="danger" (click)="stop()">
+        <ion-icon  name="square"></ion-icon>
+      </ion-fab-button>
+    </ng-template>
+  </ion-fab>
 </ion-content>

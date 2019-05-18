@@ -159,6 +159,6 @@ export class TimeSpan {
   }
 
   public toString() {
-    return this.padNumber(this.hours, 2) + ":" + this.padNumber(this.minutes, 2) + ":" + this.padNumber(this.seconds, 2) + ":" + this.padNumber(this.milliseconds, 3);
+    return this.padNumber(this.minutes, 2) + ":" + this.padNumber(this.seconds, 2) + ":" + this.padNumber(this.milliseconds, 3);
   }
 }

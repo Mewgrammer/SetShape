@@ -5,6 +5,7 @@ import {ITrainingDay, ITrainingPlan} from '../../resources/models/interfaces';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
 import {TrainingDay} from '../../resources/models/entities';
+import {DatabaseService} from '../../services/database.service';
 
 @Component({
   selector: 'app-home-page',
@@ -12,6 +13,8 @@ import {TrainingDay} from '../../resources/models/entities';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit{
+  
+  public appReady = false;
 
   public get TrainingPlan() {
     return this._dataService.CurrentTrainingPlan;
@@ -20,12 +23,16 @@ export class HomePage implements OnInit{
     return this.TrainingPlan.days;
   }
 
-  constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
+  constructor(private _dataService: DataService, private _dbService: DatabaseService, private _router: Router,  public popoverController: PopoverController) {}
 
   async ngOnInit() {
     if(this.TrainingPlan == null) {
       await this._router.navigateByUrl(this._router.url + "/change");
     }
+    this._dbService.dbReady.subscribe( (ready) => {
+      this.appReady = ready;
+    });
+    this.appReady = this._dbService.dbReady.value;
   }
 
   public async navigateToAddPage() {

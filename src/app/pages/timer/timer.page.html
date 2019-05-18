@@ -13,11 +13,10 @@
     <ion-datetime display-format="mm:ss" placeholder="Tap here" [(ngModel)]="targetTimeInput" (ionChange)="onTargetTimeChanged()"></ion-datetime>
   </ion-item>
 
-  <circle-progress (click)="start()"
+  <circle-progress (click)="onTimerClick()"
   [percent]="percent"
   [maxPercent]="100"
   [radius]="radius"
-  [showTitle]="false"
   [showSubtitle]="false"
   [showUnits]="false"
   [outerStrokeWidth]="16"
@@ -27,11 +26,11 @@
   [backgroundStrokeWidth]="3"
   [outerStrokeGradient]="true"
   [outerStrokeGradientStopColor]="'#ff9000'"
-  [showInnerStroke]="false">
+  [showInnerStroke]="false"
+  [title]="passedTime.toString()"
+  titleFontSize="28"
+  titleColor="#ffce00">
   </circle-progress>
-  <p>
-    {{ passedTime.toString() }}
-  </p>
 
   <ion-fab vertical="bottom mb-5" horizontal="center" slot="fixed">
     <ng-container *ngIf="dateUpdater==0, else running">

@@ -4,6 +4,7 @@ import {TrainingsPopoverComponent} from './components/trainings-popover/training
 import {ITrainingDay, ITrainingPlan} from '../../resources/models/interfaces';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
+import {TrainingDay} from '../../resources/models/entities';
 
 @Component({
   selector: 'app-home-page',
@@ -41,15 +42,20 @@ export class HomePage implements OnInit{
     return await popover.present();
   }
 
-  async onDayClick(day: ITrainingDay) {
+  async onDayClick(day: TrainingDay) {
     await this._router.navigateByUrl(this._router.url + "/training-day/" + day.id);
   }
 
-  removeDay(day: ITrainingDay) {
-    this._dataService.removeTrainingDay(day);
+  async removeDay(day: TrainingDay) {
+    await this._dataService.removeTrainingDay(day);
   }
 
   async onChangeTraining() {
-    await this._router.navigateByUrl(this._router.url + "/create");
+    if(this._dataService.TrainingPlans.length > 0) {
+      await this._router.navigateByUrl(this._router.url + "/change");
+    }
+    else {
+      await this._router.navigateByUrl(this._router.url + "/create");
+    }
   }
 }

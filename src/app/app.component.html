@@ -1,5 +1,9 @@
 <ion-app>
-    <ion-router-outlet main></ion-router-outlet>
+    <div *ngIf="!databaseReady">
+        <h5>Loading...</h5>
+        <ion-spinner></ion-spinner>
+    </div>
+    <ion-router-outlet *ngIf="databaseReady" main></ion-router-outlet>
     <!--
     <ion-tabs>
       <ion-tab-bar color="dark" slot="bottom">

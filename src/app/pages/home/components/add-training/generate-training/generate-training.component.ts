@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../../../../services/data.service';
 import {Router} from '@angular/router';
 import {EWorkoutType, ITrainingDay, IWorkout} from '../../../../../resources/models/interfaces';
-import {TrainingDay} from '../../../../../resources/models/entities';
+import {TrainingDay, Workout} from '../../../../../resources/models/entities';
 
 @Component({
   selector: 'app-generate-training',
@@ -37,8 +37,8 @@ export class GenerateTrainingComponent implements OnInit {
   }
 
   onAddDayClick() {
-    const workouts: IWorkout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
-    const newDay: ITrainingDay = new TrainingDay();
+    const workouts: Workout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
+    const newDay: TrainingDay = new TrainingDay();
     newDay.name = this.dayName;
     newDay.workouts = workouts;
     console.log("New Day", newDay);

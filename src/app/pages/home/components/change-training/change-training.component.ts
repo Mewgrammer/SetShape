@@ -20,7 +20,7 @@ export class ChangeTrainingComponent implements OnInit {
   }
 
   async onSelectTraining(training: TrainingPlan) {
-    this._dataService.changeTrainingPlan(training);
+    await this._dataService.changeTrainingPlan(training);
     await this._router.navigateByUrl("/");
   }
 

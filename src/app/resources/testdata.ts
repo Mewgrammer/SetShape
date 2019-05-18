@@ -1,42 +1,11 @@
-import {EWorkoutType, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from './models/interfaces';
-import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from './models/entities';
+import {EWorkoutType} from './models/interfaces';
+import {TrainingPlan, Workout, WorkoutHistoryItem} from './models/entities';
 import {DataFactory} from './factory';
 
-const workoutBankDruecken: Workout = {
-    id: 0,
-    type: EWorkoutType.BankDruecken,
-    name: "Bank Drücken",
-    repetitions: 1,
-    sets: 1,
-    weight: 50,
-};
-
-const workoutButterfly: Workout = {
-    id: 1,
-    name: "Butterfly",
-    type: EWorkoutType.Butterfly,
-    repetitions: 5,
-    sets: 4,
-    weight: 12,
-};
-
-const workoutTrizeps: Workout = {
-    id: 2,
-    name: "Trizeps Curls",
-    type: EWorkoutType.TrizepsCurls,
-    repetitions: 32,
-    sets: 5,
-    weight: 7,
-};
-
-const workoutDips: Workout = {
-    id: 4,
-    type: EWorkoutType.Dips,
-    name: "Dips",
-    repetitions: 10,
-    sets: 4,
-    weight: 3,
-};
+const workoutBankDruecken: Workout = DataFactory.createWorkout("Bank Drücken", EWorkoutType.BankDruecken, 5, 3, 50);
+const workoutButterfly: Workout = DataFactory.createWorkout("Butterfly", EWorkoutType.Butterfly, 15, 3, 30);
+const workoutTrizeps: Workout = DataFactory.createWorkout("Trizeps Curls", EWorkoutType.TrizepsCurls, 5, 2, 50);
+const workoutDips: Workout = DataFactory.createWorkout("Dips", EWorkoutType.Dips, 6, 1, 10);
 
 export const testHistory: WorkoutHistoryItem[] = [
     DataFactory.createWorkoutHistoryItem(workoutBankDruecken),

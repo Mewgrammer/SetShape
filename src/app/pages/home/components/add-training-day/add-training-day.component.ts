@@ -37,9 +37,9 @@ export class AddTrainingDayComponent implements OnInit {
     console.log("Name",this.name);
     console.log("Selected Workouts", this.selectedWorkouts);
     const workouts: Workout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
-    console.log("Workouts", workouts);
-    let newDay: ITrainingDay = DataFactory.createTrainingDay(this.name, workouts);
-    console.log("New Day", newDay);
+    console.log("Matching Workouts:", workouts, this._dataService.Workouts);
+    let newDay = DataFactory.createTrainingDay(this.name, workouts);
+    console.log("New Day To Add:", newDay);
     this._dataService.addDayToCurrentTrainingPlan(newDay);
     await this.router.navigateByUrl("/");
   }

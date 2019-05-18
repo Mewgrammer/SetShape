@@ -38,7 +38,7 @@ export class DatabaseService {
 
   public get TrainingPlans() {
     if(this._trainingPlans == null) {
-      return this.loadTrainingPlans();
+      this._trainingPlans = this.loadTrainingPlans();
     }
     return this._trainingPlans;
   }
@@ -117,8 +117,15 @@ export class DatabaseService {
 
   private async loadData() {
     try {
+      if(!this._connection.isConnected || this._connection.manager == null) {
+        console.log("DB not connected - retrying to load data in 1 second...");
+        setTimeout(() => this.loadData(), 1000);
+        return;
+      }
+      console.log("Loading Data...");
       let workouts = await this._connection.manager.find(Workout);
       if(workouts.length == 0) {
+        console.log("Adding default Workouts to Database...");
         await this.addWorkouts(TestData.workouts);
         console.log("Added default Workouts");
       }
@@ -126,11 +133,12 @@ export class DatabaseService {
       const history = await this.loadHistory();
       const days = await this.loadTrainingDays();
       const plans = await this.loadTrainingPlans();
-
-      console.log("Workouts", workouts);
-      console.log("Days", days);
-      console.log("Plans", plans);
-      console.log("History", history);
+      this._activeTrainingPlan = this.findActiveTrainingPlan();
+  
+      console.log("DB: Workouts", workouts);
+      console.log("DB: Days", days);
+      console.log("DB: Plans", plans);
+      console.log("DB: History", history);
     }
     catch (e) {
       console.error(e);
@@ -141,13 +149,22 @@ export class DatabaseService {
   // History Item
   // *****************************************************************************
   private async loadHistory(): Promise<WorkoutHistoryItem[]> {
-    this._history = this._connection.manager.find(WorkoutHistoryItem, { relations: ["workout"]});
+    if(!this._connection.isConnected || this._connection.manager == null) {
+      return  [];
+    }
+    const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    this._history = repo.find({relations: ["workout"]});
+    // this._history = this._connection.manager.find(WorkoutHistoryItem, { relations: ["workout"]});
+  
     return this._history;
   }
   public async addHistoryItem(item: WorkoutHistoryItem): Promise<WorkoutHistoryItem> {
     item.id = undefined; // Make sure Id is not set - it will be auto-generated
-    const addResult = await this._connection.manager.save(item);
-    console.log("WorkoutHistoryItem added", addResult);
+    console.log("DB: adding History Item", item);
+    const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    const addResult = await repo.save(item);
+    console.log("DB: WorkoutHistoryItem added", addResult);
+    this._history = this.loadHistory();
     return addResult;
   }
   public async addHistoryItems(items: WorkoutHistoryItem[]) {
@@ -155,21 +172,24 @@ export class DatabaseService {
       w.id = undefined;
       return w;
     });
-    const addResult = await this._connection.manager.save(items);
-    console.log("WorkoutHistoryItem added", addResult);
+    const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    const addResult = await repo.save(items);
+    console.log("DB: WorkoutHistoryItem added", addResult);
+    this._history = this.loadHistory();
     return addResult;
   }
   public async updateHistoryItem(updatedDay: TrainingDay) {
-    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
-    const updateResult = await repo.createQueryBuilder().update(TrainingDay)
-        .set(updatedDay)
-        .where("id = :id", { id: updatedDay.id })
-        .execute();
-    console.log("TrainingDay updated:", updateResult);
+    const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    const updateResult = await repo.save(updatedDay);
+    console.log("DB: TrainingDay updated:", updateResult);
+    this._history = this.loadHistory();
   }
   public async deleteHistoryItem(item: WorkoutHistoryItem) {
-    const deleteResult = this._connection.manager.delete(WorkoutHistoryItem, {id : item.id});
-    console.log("WorkoutHistoryItem deleted", deleteResult);
+    const repo = getRepository("history") as Repository<WorkoutHistoryItem>;
+    const deleteResult = await repo.delete({id: item.id});
+    console.log("DB: WorkoutHistoryItem deleted", deleteResult);
+    this._history = this.loadHistory();
+  
     return  deleteResult;
   }
 
@@ -177,16 +197,25 @@ export class DatabaseService {
   // Training Plan
   // *****************************************************************************
   private async loadTrainingPlans(): Promise<TrainingPlan[]> {
-    this._trainingPlans = this._connection.manager.find(TrainingPlan, { relations: ["days"]});
+    if(!this._connection.isConnected || this._connection.manager == null) {
+      return  [];
+    }
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    this._trainingPlans = repo.find({relations: ["days", "days.workouts"]});
+    // this._trainingPlans = this._connection.manager.find(TrainingPlan, { relations: ["days"]});
     return this._trainingPlans;
   }
   private async findActiveTrainingPlan(): Promise<TrainingPlan> {
-    return await this._connection.manager.findOne(TrainingPlan, { relations: ["days"], where: "active = true"});
+    console.log("Find Active TrainingPlan");
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    return await repo.findOne({active: true}, { relations: ["days", "days.workouts"]});
   }
   public async addTrainingPlan(plan: TrainingPlan): Promise<TrainingPlan> {
     plan.id = undefined; // Make sure Id is not set - it will be auto-generated
-    const addedEntity = await this._connection.manager.save(plan);
-    console.log("TrainingPlan added", addedEntity);
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    const addedEntity = await repo.save(plan);
+    console.log("DB: TrainingPlan added", addedEntity);
+    this._trainingPlans = this.loadTrainingPlans();
     return addedEntity;
   }
   public async addTrainingPlans(plans: TrainingPlan[]) {
@@ -194,21 +223,24 @@ export class DatabaseService {
       w.id = undefined;
       return w;
     });
-    const addResult = await this._connection.manager.save(plans);
-    console.log("TrainingPlan added", addResult);
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    const addResult = await repo.save(plans);
+    console.log("DB:  TrainingPlan added", addResult);
+    this._trainingPlans = this.loadTrainingPlans();
     return addResult;
   }
   public async updateTrainingPlan(updatedPlan: TrainingPlan) {
     const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
-    const updateResult = await repo.createQueryBuilder().update(TrainingPlan)
-        .set(updatedPlan)
-        .where("id = :id", { id: updatedPlan.id })
-        .execute();
-    console.log("TrainingPlan updated:", updateResult);
+    const updateResult = await repo.save(updatedPlan);
+    console.log("DB:  TrainingPlan updated:", updateResult);
+    this._trainingPlans = this.loadTrainingPlans();
+    this._activeTrainingPlan = this.findActiveTrainingPlan();
   }
   public async deleteTrainingPlan(plan: TrainingPlan) {
-    const deleteResult = this._connection.manager.delete(TrainingPlan, {id : plan.id});
-    console.log("TrainingPlan deleted", deleteResult);
+    const repo = getRepository("trainingPlan") as Repository<TrainingPlan>;
+    const deleteResult = repo.delete({id : plan.id});
+    console.log("DB:  TrainingPlan deleted", deleteResult);
+    this._trainingPlans = this.loadTrainingPlans();
     return  deleteResult;
 
   }
@@ -217,13 +249,21 @@ export class DatabaseService {
   // Training Day
   // *****************************************************************************
   private async loadTrainingDays(): Promise<TrainingDay[]> {
-    this._trainingDays = this._connection.manager.find(TrainingDay, { relations: ["workouts"]});
+    if(!this._connection.isConnected || this._connection.manager == null) {
+      return  [];
+    }
+    // this._trainingDays = this._connection.manager.find(TrainingDay, { relations: ["workouts"]});
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    this._trainingDays = repo.find({relations: ["workouts"]});
+  
     return this._trainingDays;
   }
   public async addTrainingDay(day: TrainingDay) {
     day.id = undefined; // Make sure Id is not set - it will be auto-generated
-    const addResult = await this._connection.manager.save(day);
-    console.log("Workout added", addResult);
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    const addResult = await repo.save(day);
+    console.log("DB: TrainingDay added", addResult);
+    this._trainingDays = this.loadTrainingDays();
     return addResult;
   }
   public async addTrainingDays(days: TrainingDay[]) {
@@ -231,21 +271,23 @@ export class DatabaseService {
       w.id = undefined;
       return w;
     });
-    const addResult = await this._connection.manager.save(days);
-    console.log("Workout added", addResult);
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    const addResult = await repo.save(days);
+    console.log("DB: TrainingDays added", addResult);
+    this._trainingDays = this.loadTrainingDays();
     return addResult;
   }
   public async updateTrainingDay(updatedDay: TrainingDay) {
     const repo = getRepository("trainingDay") as Repository<TrainingDay>;
-    const updateResult = await repo.createQueryBuilder().update(TrainingDay)
-        .set(updatedDay)
-        .where("id = :id", { id: updatedDay.id })
-        .execute();
-    console.log("TrainingDay updated:", updateResult);
+    const updateResult = await repo.save(updatedDay);
+    console.log("DB: TrainingDay updated: ", updateResult);
+    this._trainingDays = this.loadTrainingDays();
   }
   public async deleteTrainingDay(day: TrainingDay) {
-    const deleteResult = this._connection.manager.delete(TrainingDay, {id : day.id});
-    console.log("TrainingDay deleted", deleteResult);
+    const repo = getRepository("trainingDay") as Repository<TrainingDay>;
+    const deleteResult = repo.delete({id : day.id});
+    console.log("DB: TrainingDay deleted", deleteResult);
+    this._trainingDays = this.loadTrainingDays();
     return  deleteResult;
   }
 
@@ -253,13 +295,21 @@ export class DatabaseService {
   // Workout
   // *****************************************************************************
   private async loadWorkouts(): Promise<Workout[]> {
-    this._workouts = this._connection.manager.find(Workout);
+    if(!this._connection.isConnected || this._connection.manager == null) {
+      return  [];
+    }
+    const repo = getRepository("workout") as Repository<Workout>;
+    this._workouts = repo.find();
+  
+    // this._workouts = this._connection.manager.find(Workout);
     return this._workouts;
   }
   public async addWorkout(workout: Workout) {
     workout.id = undefined; // Make sure Id is not set - it will be auto-generated
-    const addResult = await this._connection.manager.save(workout);
-    console.log("Workout added", addResult);
+    const repo = getRepository("workout") as Repository<Workout>;
+    const addResult = await repo.save(workout);
+    console.log("DB: Workout added", addResult);
+    this._workouts = this.loadWorkouts();
     return addResult;
   }
   public async addWorkouts(workouts: Workout[]) {
@@ -267,21 +317,24 @@ export class DatabaseService {
       w.id = undefined;
       return w;
     });
-    const addResult = await this._connection.manager.save(workouts);
-    console.log("Workout added", addResult);
+    console.log("Adding Workouts:", workouts);
+    const repo = getRepository("workout") as Repository<Workout>;
+    const addResult = await repo.save(workouts);
+    console.log("DB: Workout added", addResult);
+    this._workouts = this.loadWorkouts();
     return addResult;
   }
   public async deleteWorkout(workout: Workout) {
-    const deleteResult = this._connection.manager.delete(Workout, {id : workout.id});
-    console.log("Workout deleted", deleteResult);
+    const repo = getRepository("workout") as Repository<Workout>;
+    const deleteResult = repo.delete({id : workout.id});
+    console.log("DB: Workout deleted", deleteResult);
+    this._workouts = this.loadWorkouts();
     return  deleteResult;
   }
   public async updateWorkout(workout: Workout) {
     const repo = getRepository("workout") as Repository<Workout>;
-    const updateResult = await repo.createQueryBuilder().update(Workout)
-        .set(workout)
-        .where("id = :id", { id: workout.id })
-        .execute();
-    console.log("Workout updated:", updateResult);
+    const updateResult = await repo.save(workout);
+    console.log("DB: Workout updated:", updateResult);
+    this._workouts = this.loadWorkouts();
   }
 }

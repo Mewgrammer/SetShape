@@ -46,13 +46,13 @@ export class TrainingPlan implements ITrainingPlan{
     public id: number;
 
     @OneToMany(type => TrainingDay, trainingDay => trainingDay.trainingPlan, { cascade: true, eager: true })
-    public days: ITrainingDay[];
+    public days: TrainingDay[];
 
     @Column()
     public name: string;
 
     @Column()
-    public active: boolean;
+    public active: boolean = false;
 
 
 }
@@ -66,7 +66,7 @@ export class TrainingDay implements ITrainingDay {
     public name: string;
 
     @OneToMany(type => Workout, workout => workout.trainingDay, { cascade: true, eager: true })
-    public workouts: IWorkout[];
+    public workouts: Workout[];
 
     @ManyToOne(type => TrainingPlan, plan => plan.days )
     public trainingPlan?: TrainingPlan;
@@ -83,7 +83,7 @@ export class WorkoutHistoryItem implements IWorkoutHistoryItem{
     public timestamp: string;
 
     @ManyToOne(type => Workout, workout => workout.workoutHistoryItem, { eager: true })
-    public workout: IWorkout;
+    public workout: Workout;
 
     public get Date() {
         return new Date(Date.parse(this.timestamp));

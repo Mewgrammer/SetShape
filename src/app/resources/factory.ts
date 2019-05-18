@@ -35,6 +35,7 @@ export class DataFactory {
     public static createWorkout(name: string, type: EWorkoutType, repetitions: number, sets: number, weight: number) {
         const workout = new Workout();
         workout.id = DataFactory.WorkoutId++;
+        workout.type = type;
         workout.name = name;
         workout.repetitions = repetitions;
         workout.sets = sets;

@@ -60,3 +60,17 @@
       </ion-card>
   </div>
 </ion-content>
+
+<ion-content class="TrainingDay" color="dark" *ngIf="appReady && TrainingPlan && TrainingDays.length == 0">
+  <div>
+    <ion-card color="warning">
+      <ion-card-header color="warning">
+        <ion-card-title>
+          <ion-button color="dark" (click)="onAddDayClick()"> Tag hinzufügen</ion-button>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

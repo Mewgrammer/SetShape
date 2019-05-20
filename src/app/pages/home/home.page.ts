@@ -69,4 +69,8 @@ export class HomePage implements OnInit{
       await this._router.navigateByUrl(this._router.url + "/create");
     }
   }
+	
+	async onAddDayClick() {
+    await this._router.navigateByUrl(this._router.url + "/add");
+  }
 }

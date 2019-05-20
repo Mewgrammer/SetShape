@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Statistiken
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="dark" >
+  <ion-row>
+    <ion-col>
+      <ion-card color="dark">
+        <ion-card-header color="dark">
+          <ion-card-title>Statistiken</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-tabs>
+            <ion-tab-bar color="dark" slot="top">
+              <ion-tab-button tab="statistics" [selected]="true">
+                <ion-icon class="text-dark-contrast" name="stats"></ion-icon>
+                <ion-label class="text-dark-contrast">Übersicht</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="statistics/1">
+                <ion-icon name="body"></ion-icon>
+                <ion-label>Bank Drücken</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="statistics/2">
+                <ion-icon name="body"></ion-icon>
+                <ion-label>Butterfly</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="statistics/3">
+                <ion-icon name="body"></ion-icon>
+                <ion-label>Übung 3</ion-label>
+              </ion-tab-button>
+              <ion-tab-button tab="statistics/4">
+                <ion-icon name="body"></ion-icon>
+                <ion-label>Übung 4</ion-label>
+              </ion-tab-button>
+            </ion-tab-bar>
+          </ion-tabs>        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-card color="dark">
+        <ion-card-header color="dark">
+          <ion-card-title>Statistiken</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          Add one from Templates !
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-content>

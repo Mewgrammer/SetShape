@@ -23,10 +23,7 @@ export class HomePage implements OnInit{
   constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
   async ngOnInit() {
-    if(!this._dataService.LoggedIn) {
-      await this._router.navigateByUrl("/login");
-    }
-    else if(this.TrainingPlan == null) {
+    if(this.TrainingPlan == null) {
       await this._router.navigateByUrl(this._router.url + "/change");
     }
   }
@@ -46,7 +43,7 @@ export class HomePage implements OnInit{
   }
 
   async onDayClick(day: TrainingDay) {
-    await this._router.navigateByUrl(this._router.url + "/training-day/" + day.id);
+    await this._router.navigateByUrl("/training-day/" + day.id);
   }
 
   async removeDay(day: TrainingDay) {
@@ -55,7 +52,7 @@ export class HomePage implements OnInit{
 
   async onChangeTraining() {
     if(this._dataService.TrainingPlans.length > 0) {
-      await this._router.navigateByUrl(this._router.url + "/change");
+      await this._router.navigateByUrl( "/change");
     }
     else {
       await this._router.navigateByUrl(this._router.url + "/create");

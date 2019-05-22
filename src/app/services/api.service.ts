@@ -4,9 +4,9 @@ import {
   HistoryItem,
   HistoryItemsClient,
   SetShapeClient, TrainingDay,
-  TrainingDaysClient, TrainingPlan, TrainingPlanDayForm,
+  TrainingDaysClient, TrainingDayWorkout, TrainingPlan, TrainingPlanDayForm,
   TrainingPlansClient, User, UserForm,
-  UsersClient, UserTrainingForm, Workout, WorkoutDayForm,
+  UsersClient, UserTrainingForm, Workout,
   WorkoutsClient
 } from '../resources/ApiClient';
 
@@ -73,6 +73,7 @@ export class ApiService {
   
   public async addTrainingPlanToUser(userId: number, trainingPlan: TrainingPlan) {
     const data = new UserTrainingForm({userId: userId, trainingPlan: trainingPlan});
+    console.log("Adding Trainingplan to user", data);
     return await this._setShapeClient.addTrainingToUser(data);
   }
   
@@ -86,13 +87,13 @@ export class ApiService {
     return await this._setShapeClient.setActiveTrainingPlan(data);
   }
   
-  public async addWorkoutToDay(dayId: number, workout: Workout) {
-    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
+  public async addWorkoutToDay(day: TrainingDay, workout: Workout) {
+    const data = new TrainingDayWorkout({id: 0, trainingDay: day, trainingDayId: day.id, workout: workout, workoutId: workout.id});
     return await this._setShapeClient.addWorkoutToDay(data);
   }
   
-  public async removeWorkoutFromDay(dayId: number, workout: Workout) {
-    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
+  public async removeWorkoutFromDay(day: TrainingDay, workout: Workout) {
+    const data = new TrainingDayWorkout({id: 0, trainingDay: day, trainingDayId: day.id, workout: workout, workoutId: workout.id});
     return await this._setShapeClient.removeWorkoutFromDay(data);
   }
   

@@ -52,7 +52,7 @@ export class AddTrainingManualComponent implements OnInit {
       const newTrainingPlan = DataFactory.createTrainingPlan(this.name, this.days);
       await this._dataService.createTrainingPlan(newTrainingPlan);
       await this.presentToast();
-      await this._router.navigateByUrl("/change");
+      await this._router.navigateByUrl("/home/change");
     }
   }
   

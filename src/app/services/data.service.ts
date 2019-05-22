@@ -56,7 +56,7 @@ export class DataService {
       this._plt.ready().then( async () => {
         const loginData: {username: string, password: string} = this.readPersistetLoginData();
         await this.login(loginData.username, loginData.password);
-        console.log("Auto Login success !", this.onLogin.value);
+        console.log("Auto Login success !", this.User);
       });
     }
     catch (e) {
@@ -146,6 +146,7 @@ export class DataService {
 
   public async changeTrainingPlan(plan: TrainingPlan) {
     try {
+      console.log("change TrainingPlan", plan);
       await this._apiService.setActiveTrainingPlanOfUser(this.User.id, plan);
       this._user.currentTrainingPlan = plan;
     }
@@ -183,10 +184,21 @@ export class DataService {
     }
   }
   
+  public async addWorkoutToDay(workout: Workout, day: TrainingDay) {
+    try {
+      await this._apiService.addWorkoutToDay(day, workout);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
+  }
+  
   public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
     try {
-      await this._apiService.removeWorkoutFromDay(workout.id, day);
-      day.workouts.splice(day.workouts.indexOf(workout), 1);
+      await this._apiService.removeWorkoutFromDay(day, workout);
     }
     catch (e) {
       await this._toaster.create({
@@ -210,7 +222,7 @@ export class DataService {
   }
   
   public async addHistoryItemToDay(day: TrainingDay, item: HistoryItem) {
-    try{
+    try {
       await this._apiService.addHistoryItemToDay(day.id, item);
       day.history.push(item);
     }

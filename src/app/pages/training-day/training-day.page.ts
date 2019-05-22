@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ITrainingDay, IWorkout} from '../../resources/models/interfaces';
 import {PopoverController} from '@ionic/angular';
 import {TrainingDayPopoverComponent} from './components/training-day-popover/training-day-popover.component';
 import * as moment from 'moment';
-import {TrainingDay, Workout} from '../../resources/models/entities';
+import {TrainingDay, Workout} from '../../resources/ApiClient';
 
 @Component({
   selector: 'app-training-day',
@@ -35,7 +34,7 @@ export class TrainingDayPage implements OnInit {
   }
 
   public WorkoutIsFinished(workout: Workout) {
-    const workoutsInLastWeek = this._dataService.WorkoutHistory.filter(w => w.workout.type == workout.type && w.Date.getTime() > moment(new Date()).subtract('week', 1).toDate().getTime());
+    const workoutsInLastWeek = this.day.history.filter(w => w.workout.id == workout.id && w.date.getTime() > moment(new Date()).subtract(1, 'week').toDate().getTime());
     return workoutsInLastWeek != null && workoutsInLastWeek.length > 0;
   }
 
@@ -49,11 +48,11 @@ export class TrainingDayPage implements OnInit {
   }
 
   async onWorkoutClick(workout: Workout) {
-   await this._router.navigateByUrl("/workout/" + workout.type);
+   await this._router.navigateByUrl("/workout/" + workout.id);
   }
 
-  removeWorkout(workout: Workout) {
-    this._dataService.removeWorkoutFromDay(workout, this.day);
+  async removeWorkout(workout: Workout) {
+    await this._dataService.removeWorkoutFromDay(workout, this.day);
     this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
   }
 }

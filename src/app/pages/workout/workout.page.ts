@@ -3,8 +3,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {DataService} from '../../services/data.service';
 import {TrainingDayPopoverComponent} from '../training-day/components/training-day-popover/training-day-popover.component';
 import {NavController, PopoverController, ToastController} from '@ionic/angular';
-import {EWorkoutType, IWorkout} from '../../resources/models/interfaces';
-import {Workout} from '../../resources/models/entities';
+import {HistoryItem, Workout} from '../../resources/ApiClient';
+import {DataFactory} from '../../resources/factory';
 
 @Component({
   selector: 'app-workout',
@@ -14,20 +14,18 @@ import {Workout} from '../../resources/models/entities';
 export class WorkoutPage implements OnInit {
 
   public workout: Workout;
-  private workoutType: EWorkoutType;
+  public repetitions: number = 3;
+  public sets = 3;
+  public weight = 20;
 
   constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController, public navCtrl: NavController) {
-
   }
-
-
+  
   ngOnInit() {
     try {
-      this.workoutType = <EWorkoutType>parseInt(this.route.snapshot.paramMap.get('type'));
-      if(this.workoutType != null) {
-        this.workout = this._dataService.Workouts.find(w => w.type == <number>this.workoutType);
-        this._dataService.CurrentWorkout = this.workout;
-      }
+      const workoutId = parseInt(this.route.snapshot.paramMap.get('id'));
+      this.workout = this._dataService.Workouts.find(w => w.id == workoutId);
+      this._dataService.CurrentWorkout = this.workout;
     }
     catch (e) {
       console.error(e);
@@ -52,7 +50,7 @@ export class WorkoutPage implements OnInit {
   }
 
   async onHistoryClick() {
-    await this._router.navigateByUrl("/workout-history/" + this.workout.type);
+    await this._router.navigateByUrl("/workout-history/" + this.workout.id);
   }
 
   async onTimerClick() {
@@ -62,36 +60,37 @@ export class WorkoutPage implements OnInit {
 
   async onFinish() {
     await this.presentToast();
-    await this._dataService.addHistoryItem(this.workout);
+    const historyItem =DataFactory.createWorkoutHistoryItem(this.workout, this.repetitions, this.sets, this.weight);
+    await this._dataService.addHistoryItemToDay(this._dataService.CurrentDay, historyItem);
     if(this._dataService.CurrentDay != null) {
       await this._router.navigateByUrl("/training-day/" + this._dataService.CurrentDay.id);
     }
   }
 
   onDecrementSets() {
-    if(this.workout.sets > 0)
-      this.workout.sets--;
+    if(this.sets > 0)
+      this.sets--;
   }
 
   onIncrementSets() {
-    this.workout.sets++;
+    this.sets++;
   }
 
   OnDecrementRepetitions() {
-    if(this.workout.repetitions > 0)
-      this.workout.repetitions--;
+    if(this.repetitions > 0)
+      this.repetitions--;
   }
 
   OnIncrementRepetitions() {
-    this.workout.repetitions++;
+    this.repetitions++;
   }
 
   onDecrementWeight() {
-    if(this.workout.weight > 0)
-      this.workout.weight--;
+    if(this.weight > 0)
+      this.weight--;
   }
 
   onIncrementWeight() {
-    this.workout.weight++;
+    this.weight++;
   }
 }

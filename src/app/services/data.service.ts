@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
-import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
-import {TestData} from '../resources/testdata';
-import {DatabaseService} from './database.service';
-import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from '../resources/models/entities';
-import {DataFactory} from '../resources/factory';
+import {HistoryItem, TrainingDay, TrainingPlan, User,  Workout} from '../resources/ApiClient';
+import {ApiService} from './api.service';
+import {Platform, ToastController} from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private _trainingPlans: TrainingPlan[] = [];
-  private _currentTrainingPlan: TrainingPlan = null;
-  private _workoutHistory: WorkoutHistoryItem[] = [];
+  private _user: User;
   private _workouts: Workout[] = [];
-  private _currentWorkout: Workout = null;
-  private _currentDay: TrainingDay = null;
+  private _currentWorkout: Workout = null; // helper for Nav
+  private _currentDay: TrainingDay = null; // helper for Nav
 
-  
+  public get User() {
+    return this._user;
+  }
+  public get LoggedIn() {
+    return this._user != null;
+  }
   public  get CurrentWorkout() {
     return this._currentWorkout;
   }
@@ -31,147 +32,171 @@ export class DataService {
     this._currentDay = day;
   }
   public get TrainingPlans() {
-    return [...this._trainingPlans];
+    return [...this.User.trainings];
   }
 
   public get CurrentTrainingPlan() {
-    return this._currentTrainingPlan == null ? null : {...this._currentTrainingPlan};
+    return this.User.currentTrainingPlan;
   }
 
-  public get Workouts() {
+  public get Workouts(): Workout[] {
     return [...this._workouts];
   }
+  
 
-  public get WorkoutHistory() {
-    return [...this._workoutHistory];
+  constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController) {
+    this.autoLogin();
   }
-
-  constructor(private _databaseService: DatabaseService) {
-    this.loadData();
+  
+  public autoLogin() {
+    this._plt.ready().then( async () => {
+      if (this._plt.is('cordova')) {
+        console.log("Platform is Cordova");
+      } else {
+        console.log("Platform is !Cordova");
+        // Running app in browser
+      }
+    });
   }
-
-  public loadTestData() {
-    this._trainingPlans = [TestData.plan];
-    this._currentTrainingPlan = this._trainingPlans[0];
-    this._workoutHistory = TestData.history;
-    this._workouts = TestData.workouts;
-
-  }
-
-  public async loadData() {
-    console.log("DataService: Loading Data");
-    if(this._databaseService.dbReady.value) {
-      await this.syncWithDatabase();
-      console.log("Data Service ready");
+  
+  public async login(username: string, password: string) {
+    try {
+      this._user = await this._apiService.login(username, password);
     }
-    else {
-      this._databaseService.dbReady.subscribe(async (status) => {
-        await this.syncWithDatabase();
-        console.log("Data Service ready");
+    catch (e) {
+      await this._toaster.create({
+        message: "Login fehlgeschlagen - " + e.message,
+        color: 'danger'
+      })
+    }
+    if(this.LoggedIn) {
+      await this._toaster.create({
+        message: "erfolgreich eingeloggt als '" + username + "'",
+        color: 'success'
+      })
+    }
+  }
+  
+  public async register(username: string, password: string) {
+    try {
+      await this._apiService.register(username, password);
+      await this._toaster.create({
+        message: "erfolgreich registriert",
+        color: 'success'
+      });
+      await this.login(username, password);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "registration fehlgeschlagen - " + e.message,
+        color: 'danger'
+      });
+    }
+  }
+  
+  public async addDayToCurrentTrainingPlan(day: TrainingDay) {
+    try {
+      day.id = 0;
+      const newDay = await this._apiService.TrainingDayApi.postTrainingDay(day);
+      await this._apiService.addDayToTraining(newDay.id, this._user.currentTrainingPlan);
+      this._user.currentTrainingPlan.days.push(day);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
       });
     }
   }
 
-  public async addDayToCurrentTrainingPlan(day: TrainingDay) {
-    this._currentTrainingPlan.days.push(day);
-    console.log("Adding Day:", day);
-    await this._databaseService.addTrainingDay(day);
-    // await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
-    await this.syncWithDatabase();
-  
-  }
-
   public async createTrainingPlan(plan: TrainingPlan) {
-    const addedPlan = await this._databaseService.addTrainingPlan(plan);
-    this._trainingPlans.push(addedPlan);
-    await this.syncWithDatabase();
-  
+    try{
+      await this._apiService.addTrainingPlanToUser(this.User.id, plan);
+      this._user.trainings.push(plan);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 
   public async changeTrainingPlan(plan: TrainingPlan) {
-    console.log("Changing Active Trainingplan:", plan);
-    if(this._currentTrainingPlan != null) {
-      this._currentTrainingPlan.active = false;
-      await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
+    try {
+      await this._apiService.setActiveTrainingPlanOfUser(this.User.id, plan);
+      this._user.currentTrainingPlan = plan;
     }
-    plan.active = true;
-    await this._databaseService.updateTrainingPlan(plan);
-    this._currentTrainingPlan = {...plan};
-    await this.syncWithDatabase();
-    console.log("Current Trainingplan Changed", this._currentTrainingPlan);
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 
   public async removeTrainingPlan(plan: TrainingPlan) {
-    const matchingPlan = this._trainingPlans.find(p => p.id == plan.id);
-    if(matchingPlan != null) {
-      const deleteResult = await this._databaseService.deleteTrainingPlan(plan);
-      this._trainingPlans.splice(this._trainingPlans.indexOf(matchingPlan), 1);
-      console.log("Removed Training", matchingPlan, this._trainingPlans);
-      if(this._currentTrainingPlan.id == plan.id) {
-        this._currentTrainingPlan = null;
-      }
-      await this.syncWithDatabase();
-  
+    try {
+      await this._apiService.removeTrainingPlanFromUser(this.User.id, plan);
+      this._user.trainings.splice(this._user.trainings.indexOf(plan), 1);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
 
   public async removeTrainingDay(day: TrainingDay) {
-    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
-    if(matchingDay != null) {
-      const deleteResult = await this._databaseService.deleteTrainingDay(day);
-      this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
-      console.log("Removed TrainingDay", matchingDay, this._currentTrainingPlan.days);
-      await this.syncWithDatabase();
-  
+    try {
+      await this._apiService.removeDayFromTraining(this._user.currentTrainingPlan.id, day);
+      this._user.currentTrainingPlan.days.splice(this._user.currentTrainingPlan.days.indexOf(day), 1);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
-
-  public async removeHistoryItem(item: WorkoutHistoryItem) {
-    const match = this._workoutHistory.find(i => i.id == item.id);
-    if(match != null) {
-      const deleteResult = await this._databaseService.deleteHistoryItem(item);
-      this._workoutHistory.splice(this._workoutHistory.indexOf(match), 1);
-      console.log("Removed HistoryItem", match, this._workoutHistory);
-      await this.syncWithDatabase();
   
-    }
-  }
-
   public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
-    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
-    if(matchingDay != null) {
-      const dayIndex = this._currentTrainingPlan.days.indexOf(matchingDay);
-      const matchingWorkout = this._currentTrainingPlan.days[dayIndex].workouts.find(w => w.id == workout.id);
-      if(matchingWorkout != null) {
-        const workoutIndex =  this._currentTrainingPlan.days[dayIndex].workouts.indexOf(matchingWorkout);
-        this._currentTrainingPlan.days[dayIndex].workouts.splice(workoutIndex, 1);
-        const updateResult = await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
-        console.log("Removed Workout", workout,  this._currentTrainingPlan.days[dayIndex].workouts);
-        await this.syncWithDatabase();
-  
-      }
+    try {
+      await this._apiService.removeWorkoutFromDay(workout.id, day);
+      day.workouts.splice(day.workouts.indexOf(workout), 1);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
 
-  public async addHistoryItem(workout: Workout) {
-    const addedItem = await this._databaseService.addHistoryItem(DataFactory.createWorkoutHistoryItem(workout));
-    this._workoutHistory.push(addedItem);
-    await this.syncWithDatabase();
+  public async removeHistoryItemFromDay(day: TrainingDay, item: HistoryItem) {
+    try {
+      await this._apiService.removeHistoryItemFromDay(day.id, item);
+      day.history.splice(day.history.indexOf(item), 1);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
   
-  public async syncWithDatabase() {
-    this._trainingPlans = await this._databaseService.TrainingPlans;
-    this._currentTrainingPlan = await this._databaseService.ActivePlan;
-    this._workoutHistory = await this._databaseService.History;
-    this._workouts = await this._databaseService.Workouts;
-    
-    console.log("Sync DB Data");
-  
-    console.log("Workouts", this._workouts);
-    console.log("Current Plan", this._currentTrainingPlan);
-    console.log("Plans", this._trainingPlans);
-    console.log("History", this._workoutHistory);
-  
-  
+  public async addHistoryItemToDay(day: TrainingDay, item: HistoryItem) {
+    try{
+      await this._apiService.addHistoryItemToDay(day.id, item);
+      day.history.push(item);
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 }

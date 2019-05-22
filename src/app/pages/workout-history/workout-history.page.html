@@ -4,7 +4,7 @@
       <ion-back-button defaultHref=""></ion-back-button>
     </ion-buttons>
     <ion-title *ngIf="History && History.length > 0">
-      {{"History "+ History[0].workout.name}}
+      {{"History "+ workout.name}}
     </ion-title>
     <ion-title *ngIf="!History || History.length == 0">
       {{"History"}}
@@ -46,13 +46,13 @@
                       {{item.Date | date}}
                     </ion-col>
                     <ion-col>
-                      {{item.workout.sets}}
+                      {{item.sets}}
                     </ion-col>
                     <ion-col>
-                      {{item.workout.repetitions}}
+                      {{item.repetitions}}
                     </ion-col>
                     <ion-col>
-                      {{item.workout.weight}}
+                      {{item.weight}}
                     </ion-col>
               </ion-item>
               <ion-item-options>

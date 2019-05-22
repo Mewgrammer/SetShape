@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {NavController, PopoverController} from '@ionic/angular';
 import {TrainingsPopoverComponent} from './components/trainings-popover/trainings-popover.component';
-import {ITrainingDay, ITrainingPlan} from '../../resources/models/interfaces';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
-import {TrainingDay} from '../../resources/models/entities';
-import {DatabaseService} from '../../services/database.service';
+import {TrainingDay} from '../../resources/ApiClient';
 
 @Component({
   selector: 'app-home-page',
@@ -14,7 +12,6 @@ import {DatabaseService} from '../../services/database.service';
 })
 export class HomePage implements OnInit{
   
-  public appReady = false;
 
   public get TrainingPlan() {
     return this._dataService.CurrentTrainingPlan;
@@ -23,18 +20,13 @@ export class HomePage implements OnInit{
     return this.TrainingPlan.days;
   }
 
-  constructor(private _dataService: DataService, private _dbService: DatabaseService, private _router: Router,  public popoverController: PopoverController) {}
+  constructor(private _dataService: DataService, private _router: Router,  public popoverController: PopoverController) {}
 
   async ngOnInit() {
-
-    this._dbService.dbReady.subscribe( async (ready) => {
-      this.appReady = ready;
-      if(this.TrainingPlan == null) {
-        await this._router.navigateByUrl(this._router.url + "/change");
-      }
-    });
-    this.appReady = this._dbService.dbReady.value;
-    if(this.appReady == true && this.TrainingPlan == null) {
+    if(!this._dataService.LoggedIn) {
+      await this._router.navigateByUrl("/login");
+    }
+    else if(this.TrainingPlan == null) {
       await this._router.navigateByUrl(this._router.url + "/change");
     }
   }

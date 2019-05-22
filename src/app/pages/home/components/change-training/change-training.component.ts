@@ -21,11 +21,11 @@ export class ChangeTrainingComponent implements OnInit {
 
   async onSelectTraining(training: TrainingPlan) {
     await this._dataService.changeTrainingPlan(training);
-    await this._router.navigateByUrl("/");
+    await this._router.navigateByUrl("/home");
   }
 
   async onCreateNewTraining() {
-    await this._router.navigateByUrl("/create");
+    await this._router.navigateByUrl("/home/create");
   }
 
   async removeTraining(training: TrainingPlan) {

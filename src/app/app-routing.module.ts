@@ -3,7 +3,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {path: '*', redirectTo: '' },
-  { path: '', loadChildren: './pages/login/login.module#LoginPageModule' },
+  { path: '', loadChildren: './pages/login/login.module#LoginPageModule',  },
   { path: 'home', loadChildren: './pages/home/home.module#HomePageModule' },
   { path: 'training-day', loadChildren: './pages/training-day/training-day.module#TrainingDayPageModule' },
   { path: 'workout', loadChildren: './pages/workout/workout.module#WorkoutPageModule' },

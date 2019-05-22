@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import {HistoryItem, TrainingDay, TrainingPlan, User,  Workout} from '../resources/ApiClient';
 import {ApiService} from './api.service';
 import {Platform, ToastController} from '@ionic/angular';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
+  public onLogin: BehaviorSubject<boolean>;
   private _user: User;
   private _workouts: Workout[] = [];
   private _currentWorkout: Workout = null; // helper for Nav
@@ -17,7 +19,7 @@ export class DataService {
     return this._user;
   }
   public get LoggedIn() {
-    return this._user != null;
+    return this._user != null && this.onLogin.value;
   }
   public  get CurrentWorkout() {
     return this._currentWorkout;
@@ -45,23 +47,29 @@ export class DataService {
   
 
   constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController) {
+    this.onLogin = new BehaviorSubject<boolean>(false);
     this.autoLogin();
   }
   
   public autoLogin() {
-    this._plt.ready().then( async () => {
-      if (this._plt.is('cordova')) {
-        console.log("Platform is Cordova");
-      } else {
-        console.log("Platform is !Cordova");
-        // Running app in browser
-      }
-    });
+    try {
+      this._plt.ready().then( async () => {
+        const loginData: {username: string, password: string} = this.readPersistetLoginData();
+        await this.login(loginData.username, loginData.password);
+        console.log("Auto Login success !", this.onLogin.value);
+      });
+    }
+    catch (e) {
+      console.log("Auto Login failed !");
+    }
   }
   
   public async login(username: string, password: string) {
     try {
+      console.log("Logging in", username);
       this._user = await this._apiService.login(username, password);
+      this._workouts = await this._apiService.Workouts;
+      this.onLogin.next(true);
     }
     catch (e) {
       await this._toaster.create({
@@ -70,15 +78,29 @@ export class DataService {
       })
     }
     if(this.LoggedIn) {
+      this.persistLoginData(username,password);
       await this._toaster.create({
         message: "erfolgreich eingeloggt als '" + username + "'",
         color: 'success'
-      })
+      });
+    }
+  }
+  
+  private readPersistetLoginData() {
+    if(!this._plt.is("cordova")) {
+      return JSON.parse(localStorage.getItem("setshape_login"));
+    }
+  }
+  
+  private persistLoginData(username: string, password: string) {
+    if(!this._plt.is("cordova")) {
+      localStorage.setItem("setshape_login",JSON.stringify({username: username, password: password}));
     }
   }
   
   public async register(username: string, password: string) {
     try {
+      console.log("registering", username);
       await this._apiService.register(username, password);
       await this._toaster.create({
         message: "erfolgreich registriert",

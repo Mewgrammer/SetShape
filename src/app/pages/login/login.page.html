@@ -1,8 +1,5 @@
 <ion-header>
   <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref=""></ion-back-button>
-    </ion-buttons>
     <ion-title>
       Willkommen
     </ion-title>
@@ -19,7 +16,7 @@
     <ion-card-content >
       <ion-item color="dark">
         <ion-label position="stacked">Username</ion-label>
-        <ion-input placeholder="Username" size="large" [(ngModel)]="loginUser"></ion-input>
+        <ion-input type="text" placeholder="Username"  [(ngModel)]="loginUser"></ion-input>
       </ion-item>
       <ion-item color="dark">
         <ion-label position="stacked">Passwort</ion-label>
@@ -37,11 +34,11 @@
     <ion-card-content>
       <ion-item color="dark">
         <ion-label position="stacked">Username</ion-label>
-        <ion-input placeholder="Username"  size="large" [(ngModel)]="registerUser"></ion-input>
+        <ion-input type="text" placeholder="Username" [(ngModel)]="registerUser"></ion-input>
       </ion-item>
       <ion-item color="dark">
         <ion-label position="stacked">Passwort</ion-label>
-        <ion-input type="password" placeholder="Passwort" size="large"  [(ngModel)]="registerPassword"></ion-input>
+        <ion-input type="password" placeholder="Passwort" [(ngModel)]="registerPassword"></ion-input>
       </ion-item>
       <ion-button color="warning" (click)="onRegister()">Registrieren</ion-button>
     </ion-card-content>

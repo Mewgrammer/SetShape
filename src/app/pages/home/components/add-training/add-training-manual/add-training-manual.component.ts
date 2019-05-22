@@ -55,4 +55,10 @@ export class AddTrainingManualComponent implements OnInit {
       await this._router.navigateByUrl("/change");
     }
   }
+  
+  onWorkoutSelect() {
+    if(this.dayName != null && this.dayName.length > 0 && this.selectedWorkouts != null && this.selectedWorkouts.length > 0) {
+      this.onAddDayClick();
+    }
+  }
 }

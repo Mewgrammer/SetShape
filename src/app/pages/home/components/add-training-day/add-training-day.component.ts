@@ -28,11 +28,7 @@ export class AddTrainingDayComponent implements OnInit {
   }
 
   async onAddDayClick() {
-    console.log("Name",this.name);
-    console.log("Selected Workouts", this.selectedWorkouts);
-    console.log("Matching Workouts:", this.selectedWorkouts, this._dataService.Workouts);
     let newDay = DataFactory.createTrainingDay(this.name, this.selectedWorkouts);
-    console.log("New Day To Add:", newDay);
     await this._dataService.addDayToCurrentTrainingPlan(newDay);
     await this.router.navigateByUrl("/");
   }

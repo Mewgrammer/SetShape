@@ -89,12 +89,12 @@ export class ApiService {
   }
   
   public async addWorkoutToDay(dayId: number, workout: Workout) {
-    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
+    const data = new WorkoutDayForm({dayId: dayId, workoutId: workout.id});
     return await this._setShapeClient.addWorkoutToDay(data);
   }
   
   public async removeWorkoutFromDay(dayId: number, workout: Workout) {
-    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
+    const data = new WorkoutDayForm({dayId: dayId, workoutId: workout.id});
     return await this._setShapeClient.removeWorkoutFromDay(data);
   }
   
@@ -108,8 +108,9 @@ export class ApiService {
     return await this._setShapeClient.removeHistoryItemFromDay(data);
   }
   
-  public async addDayToTraining(trainingId: number, day: TrainingDay) {
-    const data = new TrainingPlanDayForm({trainingPlanId: trainingId, day: day});
+  public async addDayToTraining(training: TrainingPlan, day: TrainingDay) {
+    day.id = 0;
+    const data = new TrainingPlanDayForm({trainingPlanId: training.id, day: day});
     return await this._setShapeClient.addTrainingDayToTrainingPlan(data);
   }
   

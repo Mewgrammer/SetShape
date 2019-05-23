@@ -51,6 +51,24 @@ export class DataService {
     this.autoLogin();
   }
   
+  private async updateUserData() {
+    if (this._user != null) {
+      this._user = await this._apiService.getUserById(this._user.id);
+      console.log("UserData updated", this._user);
+      if (this.CurrentDay != null) {
+        const days = this._user.currentTrainingPlan.days;
+        this._currentDay = days.find(d => d.id == this.CurrentDay.id);
+        if (this.CurrentWorkout != null) {
+          const workouts = this._currentDay.workouts;
+          this._currentWorkout = workouts.find( w => w.id == this.CurrentWorkout.id);
+        }
+      }
+    }
+    else {
+      console.log("failed to update UserData");
+    }
+  }
+  
   public autoLogin() {
     try {
       this._plt.ready().then( async () => {
@@ -120,8 +138,8 @@ export class DataService {
     try {
       day.id = 0;
       const newDay = await this._apiService.TrainingDayApi.postTrainingDay(day);
-      await this._apiService.addDayToTraining(newDay.id, this._user.currentTrainingPlan);
-      this._user.currentTrainingPlan.days.push(day);
+      await this._apiService.addDayToTraining(this._user.currentTrainingPlan, newDay);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -134,7 +152,7 @@ export class DataService {
   public async createTrainingPlan(plan: TrainingPlan) {
     try{
       await this._apiService.addTrainingPlanToUser(this.User.id, plan);
-      this._user.trainings.push(plan);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -148,7 +166,7 @@ export class DataService {
     try {
       console.log("change TrainingPlan", plan);
       await this._apiService.setActiveTrainingPlanOfUser(this.User.id, plan);
-      this._user.currentTrainingPlan = plan;
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -161,7 +179,7 @@ export class DataService {
   public async removeTrainingPlan(plan: TrainingPlan) {
     try {
       await this._apiService.removeTrainingPlanFromUser(this.User.id, plan);
-      this._user.trainings.splice(this._user.trainings.indexOf(plan), 1);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -174,7 +192,7 @@ export class DataService {
   public async removeTrainingDay(day: TrainingDay) {
     try {
       await this._apiService.removeDayFromTraining(this._user.currentTrainingPlan.id, day);
-      this._user.currentTrainingPlan.days.splice(this._user.currentTrainingPlan.days.indexOf(day), 1);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -187,6 +205,7 @@ export class DataService {
   public async addWorkoutToDay(workout: Workout, day: TrainingDay) {
     try {
       await this._apiService.addWorkoutToDay(day.id, workout);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -199,6 +218,7 @@ export class DataService {
   public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
     try {
       await this._apiService.removeWorkoutFromDay(day.id, workout);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -211,7 +231,7 @@ export class DataService {
   public async removeHistoryItemFromDay(day: TrainingDay, item: HistoryItem) {
     try {
       await this._apiService.removeHistoryItemFromDay(day.id, item);
-      day.history.splice(day.history.indexOf(item), 1);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({
@@ -224,7 +244,7 @@ export class DataService {
   public async addHistoryItemToDay(day: TrainingDay, item: HistoryItem) {
     try {
       await this._apiService.addHistoryItemToDay(day.id, item);
-      day.history.push(item);
+      await this.updateUserData();
     }
     catch (e) {
       await this._toaster.create({

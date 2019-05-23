@@ -2096,7 +2096,7 @@ export interface ITrainingDayWorkout {
 
 export class WorkoutDayForm implements IWorkoutDayForm {
     dayId!: number;
-    workout!: Workout;
+    workoutId!: number;
     
     constructor(data?: IWorkoutDayForm) {
         if (data) {
@@ -2105,15 +2105,12 @@ export class WorkoutDayForm implements IWorkoutDayForm {
                     (<any>this)[property] = (<any>data)[property];
             }
         }
-        if (!data) {
-            this.workout = new Workout();
-        }
     }
     
     init(data?: any) {
         if (data) {
             this.dayId = data["dayId"];
-            this.workout = data["workout"] ? Workout.fromJS(data["workout"]) : new Workout();
+            this.workoutId = data["workoutId"];
         }
     }
     
@@ -2127,14 +2124,14 @@ export class WorkoutDayForm implements IWorkoutDayForm {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["dayId"] = this.dayId;
-        data["workout"] = this.workout ? this.workout.toJSON() : <any>undefined;
+        data["workoutId"] = this.workoutId;
         return data;
     }
 }
 
 export interface IWorkoutDayForm {
     dayId: number;
-    workout: Workout;
+    workoutId: number;
 }
 
 export class DayHistoryItemForm implements IDayHistoryItemForm {

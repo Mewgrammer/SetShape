@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {TimeSpan} from '../../resources/TimeSpan';
 import {Vibration, VibrationOriginal} from '@ionic-native/vibration';
+import {DataService} from '../../services/data.service';
 
 @Component({
   selector: 'app-timer',
@@ -17,7 +18,7 @@ export class TimerPage implements OnInit, AfterViewInit {
   public percent: number = 0;
   public radius: number = 100;
 
-  constructor() { }
+  constructor(public _dataService: DataService) { }
 
   ngOnInit() {
     this.reset();

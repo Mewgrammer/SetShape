@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../../../../services/data.service';
 import {Router} from '@angular/router';
-import {TrainingDay, Workout} from '../../../../../resources/ApiClient';
+import {TrainingDay, TrainingDayWorkout, Workout} from '../../../../../resources/ApiClient';
+import {DataFactory} from '../../../../../resources/factory';
 
 @Component({
   selector: 'app-generate-training',
@@ -32,9 +33,7 @@ export class GenerateTrainingComponent implements OnInit {
   }
 
   onAddDayClick() {
-    const newDay: TrainingDay = new TrainingDay();
-    newDay.name = this.dayName;
-    newDay.workouts = this.selectedWorkouts;
+    const newDay = DataFactory.createTrainingDay(this.dayName, this.selectedWorkouts);
     console.log("New Day", newDay);
     this.days.push(newDay);
   }

@@ -521,7 +521,7 @@ export class SetShapeClient {
         return Promise.resolve<TrainingPlan | null>(<any>null);
     }
     
-    addWorkoutToDay(data: TrainingDayWorkout): Promise<TrainingDayWorkout | null> {
+    addWorkoutToDay(data: WorkoutDayForm): Promise<TrainingDayWorkout | null> {
         let url_ = this.baseUrl + "/workout";
         url_ = url_.replace(/[?&]$/, "");
         
@@ -570,7 +570,7 @@ export class SetShapeClient {
         return Promise.resolve<TrainingDayWorkout | null>(<any>null);
     }
     
-    removeWorkoutFromDay(data: TrainingDayWorkout): Promise<TrainingDayWorkout | null> {
+    removeWorkoutFromDay(data: WorkoutDayForm): Promise<TrainingDayWorkout | null> {
         let url_ = this.baseUrl + "/workout";
         url_ = url_.replace(/[?&]$/, "");
         
@@ -1747,7 +1747,6 @@ export interface IHistoryItem {
 export class Workout implements IWorkout {
     id!: number;
     name?: string | undefined;
-    trainingDayWorkouts?: TrainingDayWorkout[] | undefined;
     
     constructor(data?: IWorkout) {
         if (data) {
@@ -1762,11 +1761,6 @@ export class Workout implements IWorkout {
         if (data) {
             this.id = data["id"];
             this.name = data["name"];
-            if (data["trainingDayWorkouts"] && data["trainingDayWorkouts"].constructor === Array) {
-                this.trainingDayWorkouts = [] as any;
-                for (let item of data["trainingDayWorkouts"])
-                    this.trainingDayWorkouts!.push(TrainingDayWorkout.fromJS(item));
-            }
         }
     }
     
@@ -1781,11 +1775,6 @@ export class Workout implements IWorkout {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        if (this.trainingDayWorkouts && this.trainingDayWorkouts.constructor === Array) {
-            data["trainingDayWorkouts"] = [];
-            for (let item of this.trainingDayWorkouts)
-                data["trainingDayWorkouts"].push(item.toJSON());
-        }
         return data;
     }
 }
@@ -1793,123 +1782,6 @@ export class Workout implements IWorkout {
 export interface IWorkout {
     id: number;
     name?: string | undefined;
-    trainingDayWorkouts?: TrainingDayWorkout[] | undefined;
-}
-
-export class TrainingDayWorkout implements ITrainingDayWorkout {
-    id!: number;
-    workoutId!: number;
-    workout?: Workout | undefined;
-    trainingDayId!: number;
-    trainingDay?: TrainingDay | undefined;
-    
-    constructor(data?: ITrainingDayWorkout) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-    
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.workoutId = data["workoutId"];
-            this.workout = data["workout"] ? Workout.fromJS(data["workout"]) : <any>undefined;
-            this.trainingDayId = data["trainingDayId"];
-            this.trainingDay = data["trainingDay"] ? TrainingDay.fromJS(data["trainingDay"]) : <any>undefined;
-        }
-    }
-    
-    static fromJS(data: any): TrainingDayWorkout {
-        data = typeof data === 'object' ? data : {};
-        let result = new TrainingDayWorkout();
-        result.init(data);
-        return result;
-    }
-    
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["workoutId"] = this.workoutId;
-        data["workout"] = this.workout ? this.workout.toJSON() : <any>undefined;
-        data["trainingDayId"] = this.trainingDayId;
-        data["trainingDay"] = this.trainingDay ? this.trainingDay.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ITrainingDayWorkout {
-    id: number;
-    workoutId: number;
-    workout?: Workout | undefined;
-    trainingDayId: number;
-    trainingDay?: TrainingDay | undefined;
-}
-
-export class TrainingDay implements ITrainingDay {
-    id!: number;
-    name?: string | undefined;
-    trainingDayWorkouts?: TrainingDayWorkout[] | undefined;
-    history?: HistoryItem[] | undefined;
-    
-    constructor(data?: ITrainingDay) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-    
-    init(data?: any) {
-        if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
-            if (data["trainingDayWorkouts"] && data["trainingDayWorkouts"].constructor === Array) {
-                this.trainingDayWorkouts = [] as any;
-                for (let item of data["trainingDayWorkouts"])
-                    this.trainingDayWorkouts!.push(TrainingDayWorkout.fromJS(item));
-            }
-            if (data["history"] && data["history"].constructor === Array) {
-                this.history = [] as any;
-                for (let item of data["history"])
-                    this.history!.push(HistoryItem.fromJS(item));
-            }
-        }
-    }
-    
-    static fromJS(data: any): TrainingDay {
-        data = typeof data === 'object' ? data : {};
-        let result = new TrainingDay();
-        result.init(data);
-        return result;
-    }
-    
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        if (this.trainingDayWorkouts && this.trainingDayWorkouts.constructor === Array) {
-            data["trainingDayWorkouts"] = [];
-            for (let item of this.trainingDayWorkouts)
-                data["trainingDayWorkouts"].push(item.toJSON());
-        }
-        if (this.history && this.history.constructor === Array) {
-            data["history"] = [];
-            for (let item of this.history)
-                data["history"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ITrainingDay {
-    id: number;
-    name?: string | undefined;
-    trainingDayWorkouts?: TrainingDayWorkout[] | undefined;
-    history?: HistoryItem[] | undefined;
 }
 
 export class User implements IUser {
@@ -2024,6 +1896,70 @@ export interface ITrainingPlan {
     days?: TrainingDay[] | undefined;
 }
 
+export class TrainingDay implements ITrainingDay {
+    id!: number;
+    name?: string | undefined;
+    history?: HistoryItem[] | undefined;
+    workouts?: Workout[] | undefined;
+    
+    constructor(data?: ITrainingDay) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+    
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+            if (data["history"] && data["history"].constructor === Array) {
+                this.history = [] as any;
+                for (let item of data["history"])
+                    this.history!.push(HistoryItem.fromJS(item));
+            }
+            if (data["workouts"] && data["workouts"].constructor === Array) {
+                this.workouts = [] as any;
+                for (let item of data["workouts"])
+                    this.workouts!.push(Workout.fromJS(item));
+            }
+        }
+    }
+    
+    static fromJS(data: any): TrainingDay {
+        data = typeof data === 'object' ? data : {};
+        let result = new TrainingDay();
+        result.init(data);
+        return result;
+    }
+    
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (this.history && this.history.constructor === Array) {
+            data["history"] = [];
+            for (let item of this.history)
+                data["history"].push(item.toJSON());
+        }
+        if (this.workouts && this.workouts.constructor === Array) {
+            data["workouts"] = [];
+            for (let item of this.workouts)
+                data["workouts"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ITrainingDay {
+    id: number;
+    name?: string | undefined;
+    history?: HistoryItem[] | undefined;
+    workouts?: Workout[] | undefined;
+}
+
 export class UserTrainingForm implements IUserTrainingForm {
     userId!: number;
     trainingPlan!: TrainingPlan;
@@ -2108,6 +2044,97 @@ export class TrainingPlanDayForm implements ITrainingPlanDayForm {
 export interface ITrainingPlanDayForm {
     trainingPlanId: number;
     day: TrainingDay;
+}
+
+export class TrainingDayWorkout implements ITrainingDayWorkout {
+    workoutId!: number;
+    trainingDayId!: number;
+    workout?: Workout | undefined;
+    trainingDay?: TrainingDay | undefined;
+    
+    constructor(data?: ITrainingDayWorkout) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+    
+    init(data?: any) {
+        if (data) {
+            this.workoutId = data["workoutId"];
+            this.trainingDayId = data["trainingDayId"];
+            this.workout = data["workout"] ? Workout.fromJS(data["workout"]) : <any>undefined;
+            this.trainingDay = data["trainingDay"] ? TrainingDay.fromJS(data["trainingDay"]) : <any>undefined;
+        }
+    }
+    
+    static fromJS(data: any): TrainingDayWorkout {
+        data = typeof data === 'object' ? data : {};
+        let result = new TrainingDayWorkout();
+        result.init(data);
+        return result;
+    }
+    
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workoutId"] = this.workoutId;
+        data["trainingDayId"] = this.trainingDayId;
+        data["workout"] = this.workout ? this.workout.toJSON() : <any>undefined;
+        data["trainingDay"] = this.trainingDay ? this.trainingDay.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ITrainingDayWorkout {
+    workoutId: number;
+    trainingDayId: number;
+    workout?: Workout | undefined;
+    trainingDay?: TrainingDay | undefined;
+}
+
+export class WorkoutDayForm implements IWorkoutDayForm {
+    dayId!: number;
+    workout!: Workout;
+    
+    constructor(data?: IWorkoutDayForm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.workout = new Workout();
+        }
+    }
+    
+    init(data?: any) {
+        if (data) {
+            this.dayId = data["dayId"];
+            this.workout = data["workout"] ? Workout.fromJS(data["workout"]) : new Workout();
+        }
+    }
+    
+    static fromJS(data: any): WorkoutDayForm {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkoutDayForm();
+        result.init(data);
+        return result;
+    }
+    
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dayId"] = this.dayId;
+        data["workout"] = this.workout ? this.workout.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWorkoutDayForm {
+    dayId: number;
+    workout: Workout;
 }
 
 export class DayHistoryItemForm implements IDayHistoryItemForm {

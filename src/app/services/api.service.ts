@@ -4,9 +4,9 @@ import {
   HistoryItem,
   HistoryItemsClient,
   SetShapeClient, TrainingDay,
-  TrainingDaysClient, TrainingDayWorkout, TrainingPlan, TrainingPlanDayForm,
+  TrainingDaysClient, TrainingPlan, TrainingPlanDayForm,
   TrainingPlansClient, User, UserForm,
-  UsersClient, UserTrainingForm, Workout,
+  UsersClient, UserTrainingForm, Workout, WorkoutDayForm,
   WorkoutsClient
 } from '../resources/ApiClient';
 
@@ -44,7 +44,7 @@ export class ApiService {
   }
 
   constructor() {
-    this._apiUrl = "https://localhost:44300";
+    this._apiUrl = "http://localhost:30000";
     this.init();
   }
   
@@ -63,17 +63,18 @@ export class ApiService {
   
   public async login(name: string, password: string):  Promise<User | null>{
     const data = new UserForm({name: name, password: password});
+    console.log("Api: Login", data);
     return  await this._usersClient.login(data);
   }
   
   public async register(name: string, password: string) {
     const data = new UserForm({name: name, password: password});
+    console.log("Api: Register", data);
     return  await this._usersClient.register(data);
   }
   
   public async addTrainingPlanToUser(userId: number, trainingPlan: TrainingPlan) {
     const data = new UserTrainingForm({userId: userId, trainingPlan: trainingPlan});
-    console.log("Adding Trainingplan to user", data);
     return await this._setShapeClient.addTrainingToUser(data);
   }
   
@@ -87,13 +88,13 @@ export class ApiService {
     return await this._setShapeClient.setActiveTrainingPlan(data);
   }
   
-  public async addWorkoutToDay(day: TrainingDay, workout: Workout) {
-    const data = new TrainingDayWorkout({id: 0, trainingDay: day, trainingDayId: day.id, workout: workout, workoutId: workout.id});
+  public async addWorkoutToDay(dayId: number, workout: Workout) {
+    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
     return await this._setShapeClient.addWorkoutToDay(data);
   }
   
-  public async removeWorkoutFromDay(day: TrainingDay, workout: Workout) {
-    const data = new TrainingDayWorkout({id: 0, trainingDay: day, trainingDayId: day.id, workout: workout, workoutId: workout.id});
+  public async removeWorkoutFromDay(dayId: number, workout: Workout) {
+    const data = new WorkoutDayForm({dayId: dayId, workout: workout});
     return await this._setShapeClient.removeWorkoutFromDay(data);
   }
   

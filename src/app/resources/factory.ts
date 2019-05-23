@@ -1,4 +1,4 @@
-import {HistoryItem, TrainingDay, TrainingDayWorkout, TrainingPlan, Workout} from './ApiClient';
+import {HistoryItem, TrainingDay, TrainingPlan, Workout} from './ApiClient';
 
 class WorkoutHistoryItem {
 }
@@ -9,9 +9,7 @@ export class DataFactory {
         const day = new TrainingDay();
         day.id = 0;
         day.name = name;
-        day.trainingDayWorkouts = workouts.map(w => {
-            return new TrainingDayWorkout({id: 0, workoutId: w.id, workout: w, trainingDayId: day.id, trainingDay: day})
-        });
+        day.workouts = workouts;
         return day;
     }
 

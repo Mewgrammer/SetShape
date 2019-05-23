@@ -186,7 +186,7 @@ export class DataService {
   
   public async addWorkoutToDay(workout: Workout, day: TrainingDay) {
     try {
-      await this._apiService.addWorkoutToDay(day, workout);
+      await this._apiService.addWorkoutToDay(day.id, workout);
     }
     catch (e) {
       await this._toaster.create({
@@ -198,7 +198,7 @@ export class DataService {
   
   public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
     try {
-      await this._apiService.removeWorkoutFromDay(day, workout);
+      await this._apiService.removeWorkoutFromDay(day.id, workout);
     }
     catch (e) {
       await this._toaster.create({

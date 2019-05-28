@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import {HistoryItem, TrainingDay, TrainingPlan, User,  Workout} from '../resources/ApiClient';
 import {ApiService} from './api.service';
 import {Platform, ToastController} from '@ionic/angular';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
+import * as moment from 'moment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,7 @@ import {BehaviorSubject} from 'rxjs';
 export class DataService {
 
   public onLogin: BehaviorSubject<boolean>;
+  public onDataChanged: Subject<User>;
   private _user: User;
   private _workouts: Workout[] = [];
   private _currentWorkout: Workout = null; // helper for Nav
@@ -48,6 +51,7 @@ export class DataService {
 
   constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController) {
     this.onLogin = new BehaviorSubject<boolean>(false);
+    this.onDataChanged = new Subject<User>();
     this.autoLogin();
   }
   
@@ -63,10 +67,16 @@ export class DataService {
           this._currentWorkout = workouts.find( w => w.id == this.CurrentWorkout.id);
         }
       }
+      this.onDataChanged.next(this.User);
     }
     else {
       console.log("failed to update UserData");
     }
+  }
+  
+  public workoutOfDayIsFinished(workout: Workout, day: TrainingDay,) {
+    const workoutsInLastWeek = day.history.filter(w => w.workout.id == workout.id && w.date.getTime() > moment(new Date()).subtract(1, 'week').toDate().getTime());
+    return workoutsInLastWeek != null && workoutsInLastWeek.length > 0;
   }
   
   public autoLogin() {
@@ -88,6 +98,7 @@ export class DataService {
       this._user = await this._apiService.login(username, password);
       this._workouts = await this._apiService.Workouts;
       this.onLogin.next(true);
+      this.onDataChanged.next(this.User);
     }
     catch (e) {
       await this._toaster.create({

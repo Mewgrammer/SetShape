@@ -3,8 +3,8 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>
-      {{day.name}}
+    <ion-title *ngIf="Day != null">
+      {{Day.name}}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="presentPopover($event)">
@@ -14,38 +14,20 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!day.workouts || day.workouts.length == 0">
+<ion-content color="dark" *ngIf="Day == null || Day.workouts.length == 0">
   <ion-card color="dark">
     <ion-card-header color="dark">
       <ion-card-subtitle>Keine Übungen für diesen Tag vorhanden !</ion-card-subtitle>
     </ion-card-header>
   </ion-card>
 </ion-content>
-<ion-content color="dark" *ngIf="day.workouts && day.workouts.length > 0">
-  <div *ngFor="let workout of day.workouts">
-    <ion-card color="warning" *ngIf="!WorkoutIsFinished(workout)" (click)="onWorkoutClick(workout)">
-      <ion-card-header color="warning" >
-        <ion-card-title>
-          <ion-item-sliding>
-            <ion-item color="warning">
-              <h5>
-                {{workout.name}}
-              </h5>
-            </ion-item>
-            <ion-item-options>
-              <ion-button color="danger" (click)="removeWorkout(workout)"><ion-icon name="trash"></ion-icon> Löschen</ion-button>
-            </ion-item-options>
-          </ion-item-sliding>
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-      </ion-card-content>
-    </ion-card>
-    <ion-card color="success" *ngIf="WorkoutIsFinished(workout)" (click)="onWorkoutClick(workout)">
-        <ion-card-header color="success"  >
+<ion-content color="dark" *ngIf="Day != null">
+  <div *ngFor="let workout of Day.workouts">
+    <ion-card [color]="getWorkoutCardColor(workout)" (click)="onWorkoutClick(workout)">
+        <ion-card-header [color]="getWorkoutCardColor(workout)" >
           <ion-card-title>
             <ion-item-sliding>
-                <ion-item color="success">
+                <ion-item [color]="getWorkoutCardColor(workout)" >
                     <h5>
                       {{workout.name}}
                     </h5>

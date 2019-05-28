@@ -13,6 +13,10 @@ import {TrainingDay, Workout} from '../../resources/ApiClient';
 })
 export class TrainingDayPage implements OnInit {
 
+  public get Day() {
+    return this.day;
+  }
+  
   public day: TrainingDay;
   private dayId: number;
 
@@ -22,11 +26,17 @@ export class TrainingDayPage implements OnInit {
 
   ngOnInit() {
     try {
+      this._dataService.onDataChanged.subscribe( (data) => {
+        this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
+        this._dataService.CurrentDay = this.day;
+        console.log("UserDataUpated, Training-day:", this.day)
+      });
       this.dayId = parseInt(this.route.snapshot.paramMap.get('id'));
       if(this.dayId != null) {
         this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
         this._dataService.CurrentDay = this.day;
       }
+      console.log("Init Training-Day", this.day);
     }
     catch (e) {
       console.error(e);
@@ -34,8 +44,7 @@ export class TrainingDayPage implements OnInit {
   }
 
   public WorkoutIsFinished(workout: Workout) {
-    const workoutsInLastWeek = this.day.history.filter(w => w.workout.id == workout.id && w.date.getTime() > moment(new Date()).subtract(1, 'week').toDate().getTime());
-    return workoutsInLastWeek != null && workoutsInLastWeek.length > 0;
+    return this._dataService.workoutOfDayIsFinished(workout, this.day);
   }
 
   async presentPopover(ev: any) {
@@ -54,5 +63,10 @@ export class TrainingDayPage implements OnInit {
   async removeWorkout(workout: Workout) {
     await this._dataService.removeWorkoutFromDay(workout, this.day);
     this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
+    await this._router.navigateByUrl("/trainingDay/" + this.dayId); //make sure we stay on this page
+  }
+  
+  getWorkoutCardColor(workout: Workout) {
+    return this.WorkoutIsFinished(workout) ? "success" : "warning";
   }
 }

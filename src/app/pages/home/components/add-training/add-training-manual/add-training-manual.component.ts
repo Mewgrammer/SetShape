@@ -45,6 +45,12 @@ export class AddTrainingManualComponent implements OnInit {
     const newDay = DataFactory.createTrainingDay(this.dayName, this.selectedWorkouts);
     console.log("New Day", newDay);
     this.days.push(newDay);
+    this.clearInputs();
+  }
+  
+  private clearInputs() {
+    this.dayName = "";
+    this.selectedWorkouts = [];
   }
 
   async onCreateTraining() {

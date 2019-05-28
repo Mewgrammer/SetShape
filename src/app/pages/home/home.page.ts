@@ -3,7 +3,7 @@ import {NavController, PopoverController} from '@ionic/angular';
 import {TrainingsPopoverComponent} from './components/trainings-popover/trainings-popover.component';
 import {DataService} from '../../services/data.service';
 import {Router} from '@angular/router';
-import {TrainingDay} from '../../resources/ApiClient';
+import {TrainingDay, TrainingPlan} from '../../resources/ApiClient';
 
 @Component({
   selector: 'app-home-page',
@@ -41,6 +41,12 @@ export class HomePage implements OnInit{
     });
     return await popover.present();
   }
+  
+  public getCardColor(day: TrainingDay) {
+    if(this.TrainingPlan == null || day == null) return  "warning";
+    const allWorkoutsFinished = day.workouts.find(w => !this._dataService.workoutOfDayIsFinished(w, day)) == null;
+    return allWorkoutsFinished ? "success" : "warning";
+  }
 
   async onDayClick(day: TrainingDay) {
     await this._router.navigateByUrl("/training-day/" + day.id);
@@ -48,6 +54,7 @@ export class HomePage implements OnInit{
 
   async removeDay(day: TrainingDay) {
     await this._dataService.removeTrainingDay(day);
+    await this._router.navigateByUrl("/home"); //make sure we stay here
   }
 
   async onChangeTraining() {

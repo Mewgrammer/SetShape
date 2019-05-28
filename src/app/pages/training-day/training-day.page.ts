@@ -63,7 +63,7 @@ export class TrainingDayPage implements OnInit {
   async removeWorkout(workout: Workout) {
     await this._dataService.removeWorkoutFromDay(workout, this.day);
     this.day = this._dataService.CurrentTrainingPlan.days.find(d => d.id == this.dayId);
-    await this._router.navigateByUrl("/trainingDay/" + this.dayId); //make sure we stay on this page
+    await this._router.navigateByUrl("/training-day/" + this.dayId); //make sure we stay on this page
   }
   
   getWorkoutCardColor(workout: Workout) {

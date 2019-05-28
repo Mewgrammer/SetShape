@@ -18,7 +18,7 @@ export class WorkoutPage implements OnInit {
   public sets = 3;
   public weight = 20;
 
-  constructor(private _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController, public navCtrl: NavController) {
+  constructor(public _dataService: DataService, private route: ActivatedRoute, private _router: Router, public popoverController: PopoverController, public toastController: ToastController, public navCtrl: NavController) {
   }
   
   ngOnInit() {

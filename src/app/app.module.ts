@@ -25,7 +25,6 @@ import {CounterComponent} from './components/counter/counter.component';
       StatusBar,
       SplashScreen,
       { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-      SQLite,
   ],
   bootstrap: [AppComponent]
 })

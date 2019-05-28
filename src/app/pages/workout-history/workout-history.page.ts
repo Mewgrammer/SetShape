@@ -17,7 +17,7 @@ export class WorkoutHistoryPage implements OnInit {
     return this._dataService.CurrentDay.history;
   }
 
-  constructor(private _dataService: DataService, private route: ActivatedRoute) {
+  constructor(public _dataService: DataService, private route: ActivatedRoute) {
 
   }
 

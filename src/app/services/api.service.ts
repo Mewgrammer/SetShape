@@ -44,7 +44,7 @@ export class ApiService {
   }
 
   constructor() {
-    this._apiUrl = "http://localhost:30000";
+    this._apiUrl = "https://setshape.azurewebsites.net";
     this.init();
   }
   

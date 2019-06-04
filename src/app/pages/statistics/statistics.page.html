@@ -17,43 +17,40 @@
           <ion-card-title>Statistiken</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-tabs>
-            <ion-tab-bar color="dark" slot="top">
-              <ion-tab-button tab="statistics" [selected]="true">
-                <ion-icon class="text-dark-contrast" name="stats"></ion-icon>
-                <ion-label class="text-dark-contrast">Übersicht</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="statistics/1">
-                <ion-icon name="body"></ion-icon>
-                <ion-label>Bank Drücken</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="statistics/2">
-                <ion-icon name="body"></ion-icon>
-                <ion-label>Butterfly</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="statistics/3">
-                <ion-icon name="body"></ion-icon>
-                <ion-label>Übung 3</ion-label>
-              </ion-tab-button>
-              <ion-tab-button tab="statistics/4">
-                <ion-icon name="body"></ion-icon>
-                <ion-label>Übung 4</ion-label>
-              </ion-tab-button>
-            </ion-tab-bar>
-          </ion-tabs>        </ion-card-content>
+          <ion-row>
+            <ion-col>Besuche im Fitnesstudio</ion-col>
+            <ion-col>{{getStudioVisitCount()}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>Anzahl abgeschlossener Übungen</ion-col>
+            <ion-col>{{getCompletedWorkoutCount()}}</ion-col>
+          </ion-row>
+          <ion-card color="dark" *ngFor="let workout of dataService.Workouts">
+            <ion-card-header color="dark">
+              <ion-card-title>{{workout.name}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-row>
+                  <ion-col>Anzahl</ion-col>
+                  <ion-col>{{getWorkoutCount(workout.name)}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>Summe Gewicht</ion-col>
+                  <ion-col>{{getWeightSumOfWorkout(workout.name)}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>Durchschnittliches Gewicht</ion-col>
+                  <ion-col>{{getAverageWeightOfWorkout(workout.name)}}</ion-col>
+                </ion-row>
+            </ion-card-content>
+          </ion-card>
+        </ion-card-content>
       </ion-card>
     </ion-col>
   </ion-row>
   <ion-row>
     <ion-col>
-      <ion-card color="dark">
-        <ion-card-header color="dark">
-          <ion-card-title>Statistiken</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          Add one from Templates !
-        </ion-card-content>
-      </ion-card>
+
     </ion-col>
   </ion-row>
 </ion-content>

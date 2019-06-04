@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" *ngIf="_dataService.CurrentWorkout != null">
       <ion-back-button defaultHref="/workout/{{_dataService.CurrentWorkout.id}}"></ion-back-button>
     </ion-buttons>
     <ion-title>Timer</ion-title>

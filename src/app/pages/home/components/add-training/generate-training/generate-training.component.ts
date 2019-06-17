@@ -16,6 +16,9 @@ export class GenerateTrainingComponent implements OnInit {
   public days : TrainingDay[] = [];
   public selectedWorkouts: Workout[];
   public dayName: string;
+  public selectedGoal: string;
+  public selectedExperience: string;
+  public showDayWarning: boolean;
   
   public get Workouts() {
     return this._dataService.Workouts;
@@ -39,6 +42,10 @@ export class GenerateTrainingComponent implements OnInit {
   }
 
   async onCreateTraining() {
-    await this._router.navigateByUrl("/change");
+    if(parseInt(this.countDays)<1||parseInt(this.countDays)>7) {
+      this.showDayWarning = true;
+    } else if(this.selectedExperience!=null && this.selectedGoal!=null){
+      await this._router.navigateByUrl("/change");
+    }
   }
 }

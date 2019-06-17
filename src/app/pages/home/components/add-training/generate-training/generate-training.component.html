@@ -18,23 +18,30 @@
     </ion-card-header>
     <ion-card-content style="font-size: 18px;">
       <ion-item color="dark">
-        <ion-label position="stacked">Name</ion-label>
-        <ion-input type="text" [(ngModel)]="name"></ion-input>
-      </ion-item>
-      <ion-item color="dark">
-        <ion-label position="stacked">Anzahl Tage</ion-label>
+        <ion-label position="stacked">Wie viel Tage/Woche möchtest du Sport machen?</ion-label>
         <ion-input type="text" [(ngModel)]="countDays"></ion-input>
       </ion-item>
       <ion-item color="dark">
-        <ion-label position="stacked">Erfahrung</ion-label>
-        <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
-          <ion-select-option [value]="workout" *ngFor="let workout of Workouts">
-            {{workout.name}}
-          </ion-select-option>
+        <ion-label position="stacked">Hast du sportliche Erfahrungen?</ion-label>
+        <ion-select [(ngModel)]="selectedExperience" class="w-100 bg-ionic-dark text-dark-contrast">
+          <ion-select-option>Ja</ion-select-option>
+          <ion-select-option>Nein</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item color="dark">
+        <ion-label position="stacked">Welche Ziele hast du?</ion-label>
+        <ion-select [(ngModel)]="selectedGoal" class="w-100 bg-ionic-dark text-dark-contrast">
+          <ion-select-option>Gesundheit</ion-select-option>
+          <ion-select-option>Muskelaufbau</ion-select-option>
+          <ion-select-option>Ausdauer</ion-select-option>
+          <ion-select-option>Gewichtsverlust</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-button size="large" color="warning" (click)="onCreateTraining()">Training Generieren</ion-button>
     </ion-card-content>
+    <div *ngIf="showDayWarning" style="color: red">
+        Die Anzahl der Tage muss zwischen 1 und 7 liegen
+    </div>
   </ion-card>
 </ion-content>
 

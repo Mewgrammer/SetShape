@@ -55,25 +55,56 @@ export class GenerateTrainingComponent implements OnInit {
   generateTraining() {
     if (!this.isExperienced) {
       if(this.countDays < 4){
-        console.log("Anfänger GK");
+        this.generateBeginnerGK();
       }
       else if(this.countDays < 6){
-        console.log("Anfänger OK/UK")
+        this.generateBeginnerOKUK();
       }
       else {
-        console.log("Anfänger PUSH/PULL/LEGS")
+        this.generateBeginnerPPB();
       }
     }
     else {
       if (this.countDays < 4) {
-        console.log("Profi GK");
+        this.generateAdvancedGK();
       }
       else if (this.countDays < 6) {
-        console.log("Profi OK/UK")
+        this.generateAdvancedOKUK();
       }
       else {
-        console.log("Profi PUSH/PULL/LEGS")
+        this.generateAdvancedPPB();
       }
     }
   }
+
+  generateBeginnerGK() {
+    let generatedWorkouts: Workout[] = [
+      //this.findWorkoutByName('Bizepscurls'), 
+      //this.findWorkoutByName('Bankdrücken')
+    ];
+    const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', this.generatedWorkouts);
+    this.days.push(newDay);
+    DataFactory.createTrainingPlan('Ganzkörpertraining', this.days);
+  }
+
+  generateBeginnerOKUK() {
+    
+  }
+
+  generateBeginnerPPB() {
+    
+  }
+
+  generateAdvancedGK() {
+    
+  }
+
+  generateAdvancedOKUK() {
+    
+  }
+
+  generateAdvancedPPB() {
+    
+  }
+
 }

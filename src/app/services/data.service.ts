@@ -82,6 +82,7 @@ export class DataService {
     try {
       this._plt.ready().then( async () => {
         const loginData: {username: string, password: string} = this.readPersistetLoginData();
+        if(loginData == null) return;
         await this.login(loginData.username, loginData.password);
         console.log("Auto Login success !", this.User);
       });
@@ -100,17 +101,22 @@ export class DataService {
       this.onDataChanged.next(this.User);
     }
     catch (e) {
-      await this._toaster.create({
+      console.warn("Login Failed", e);
+      this.onLogin.next(false);
+      (await this._toaster.create({
+        duration: 2000,
         message: "Login fehlgeschlagen - " + e.message,
         color: 'danger'
-      })
+      })).present();
+      
     }
     if(this.LoggedIn) {
       this.persistLoginData(username,password);
-      await this._toaster.create({
+      (await this._toaster.create({
+        duration: 2000,
         message: "erfolgreich eingeloggt als '" + username + "'",
         color: 'success'
-      });
+      })).present();
     }
   }
   
@@ -130,17 +136,19 @@ export class DataService {
     try {
       console.log("registering", username);
       await this._apiService.register(username, password);
-      await this._toaster.create({
+      (await this._toaster.create({
+        duration: 2000,
         message: "erfolgreich registriert",
         color: 'success'
-      });
+      })).present();
       await this.login(username, password);
     }
     catch (e) {
-      await this._toaster.create({
+      (await this._toaster.create({
+        duration: 2000,
         message: "registration fehlgeschlagen - " + e.message,
         color: 'danger'
-      });
+      })).present();
     }
   }
   

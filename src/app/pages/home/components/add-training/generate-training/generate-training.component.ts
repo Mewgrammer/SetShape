@@ -150,8 +150,8 @@ export class GenerateTrainingComponent implements OnInit {
       this.findWorkoutByName('Beinbeugermaschine'),
       this.findWorkoutByName('Rückenstrecker')
     ];
-    const push = DataFactory.createTrainingDay('Oberkörper', pushWorkouts);
-    const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
+    const push = DataFactory.createTrainingDay('Push', pushWorkouts);
+    const pull = DataFactory.createTrainingDay('Pull', pullWorkouts);
     const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
     this.days.push(push, pull, legs);
     this.presentSuccessToast('3er Split für Beginner');
@@ -226,8 +226,8 @@ export class GenerateTrainingComponent implements OnInit {
       this.findWorkoutByName('Beinbeugermaschine'),
       this.findWorkoutByName('Ausfallschritte')
     ];
-    const push = DataFactory.createTrainingDay('Oberkörper', pushWorkouts);
-    const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
+    const push = DataFactory.createTrainingDay('Push', pushWorkouts);
+    const pull = DataFactory.createTrainingDay('Pull', pullWorkouts);
     const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
     this.days.push(push, pull, legs);
     this.presentSuccessToast('3er Split Fortgeschritten');

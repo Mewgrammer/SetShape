@@ -67,6 +67,24 @@ export class DataService {
     this.autoLogin();
   }
   
+  public countDaysWithCompletedWorkout() {
+    if(!this.LoggedIn || this.User == null) return 0;
+    let uniqueDays: Date[] = [];
+    this.User.trainings.forEach(training => {
+      training.days.forEach(day => {
+        day.history.forEach(historyItem => {
+          if(uniqueDays.find(d => d.getUTCFullYear() == historyItem.date.getUTCFullYear()
+            && d.getUTCMonth() == historyItem.date.getUTCMonth()
+            && d.getUTCDate() == historyItem.date.getUTCDate()) == null
+          ) {
+            uniqueDays.push(historyItem.date);
+          }
+        });
+      });
+    });
+    return uniqueDays.length;
+  }
+  
   private async updateUserData() {
     if (this._user != null) {
       this._user = await this._apiService.getUserById(this._user.id);

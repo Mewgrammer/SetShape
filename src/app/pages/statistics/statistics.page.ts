@@ -16,7 +16,7 @@ export class StatisticsPage implements OnInit {
   }
   
   public getStudioVisitCount() {
-    return 42;
+    return this.dataService.countDaysWithCompletedWorkout();
   }
   
   public getCompletedWorkoutCount() {

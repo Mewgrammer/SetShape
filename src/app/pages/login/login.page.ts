@@ -19,12 +19,12 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
   	this._dataService.onLogin.subscribe( async (value) => {
-  		if(value) {
+  		if(this._dataService.LoggedIn) {
   			console.log("OnLogin fired!");
 				await this._router.navigateByUrl( "/home");
 			}
 		});
-  	if(this._dataService.onLogin.value) {
+  	if(this._dataService.LoggedIn) {
 			await this._router.navigateByUrl( "/home");
 		}
   }

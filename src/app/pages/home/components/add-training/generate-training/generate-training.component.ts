@@ -79,10 +79,9 @@ export class GenerateTrainingComponent implements OnInit {
 
   generateBeginnerGK() {
     let generatedWorkouts: Workout[] = [
-      //this.findWorkoutByName('Bizepscurls'), 
-      //this.findWorkoutByName('Bankdrücken')
+      this.findWorkoutByName('Butterfly')
     ];
-    const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', this.generatedWorkouts);
+    const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', generatedWorkouts);
     this.days.push(newDay);
     DataFactory.createTrainingPlan('Ganzkörpertraining', this.days);
   }
@@ -105,6 +104,10 @@ export class GenerateTrainingComponent implements OnInit {
 
   generateAdvancedPPB() {
     
+  }
+
+  findWorkoutByName(name: string): Workout {
+    return this.Workouts.find(workout => workout.name == name)
   }
 
 }

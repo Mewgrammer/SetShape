@@ -38,9 +38,9 @@ export class GenerateTrainingComponent implements OnInit {
     if(this.countDays < 1 || this.countDays > 7) {
       await this.presentWarningToast();
     }
-    else if(this.selectedGoal!=null){
-      this.generateTraining();
-      await this._router.navigateByUrl("/change");
+    else if(this.selectedGoal != null){
+      await this.generateTraining();
+      await this._router.navigateByUrl("/home/change");
     }
   }
 
@@ -60,27 +60,27 @@ export class GenerateTrainingComponent implements OnInit {
     successToast.present();
   }
 
-  generateTraining() {
+  async generateTraining() {
     if (!this.isExperienced) {
       if(this.countDays < 4){
-        this.generateBeginnerGK();
+        await this.generateBeginnerGK();
       }
       else if(this.countDays < 6){
-        this.generateBeginnerOKUK();
+        await this.generateBeginnerOKUK();
       }
       else {
-        this.generateBeginnerPPB();
+        await this.generateBeginnerPPB();
       }
     }
     else {
       if (this.countDays < 4) {
-        this.generateAdvancedGK();
+        await this.generateAdvancedGK();
       }
       else if (this.countDays < 6) {
-        this.generateAdvancedOKUK();
+        await this.generateAdvancedOKUK();
       }
       else {
-        this.generateAdvancedPPB();
+        await this.generateAdvancedPPB();
       }
     }
   }
@@ -96,7 +96,7 @@ export class GenerateTrainingComponent implements OnInit {
     ];
     const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', generatedWorkouts);
     this.days.push(newDay);
-    this.presentSuccessToast('Ganzkörpertraining für Beginner');
+    await this.presentSuccessToast('Ganzkörpertraining für Beginner');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('Ganzkörpertraining Beginner', this.days));
   }
 
@@ -120,7 +120,7 @@ export class GenerateTrainingComponent implements OnInit {
     const upperBody = DataFactory.createTrainingDay('Oberkörper', upperBodyWorkouts);
     const lowerBody = DataFactory.createTrainingDay('Unterkörper', lowerBodyWorkouts);
     this.days.push(upperBody, lowerBody);
-    this.presentSuccessToast('2er Split für Beginner');
+    await this.presentSuccessToast('2er Split für Beginner');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('2er Split Beginner', this.days));
   }
 
@@ -141,7 +141,7 @@ export class GenerateTrainingComponent implements OnInit {
       this.findWorkoutByName('Rückenstrecker'),
       this.findWorkoutByName('Bizepscurls SZ-Stange'),
       this.findWorkoutByName('Klimmzüge')
-    ]
+    ];
 
     let legsWorkouts: Workout[] = [
       this.findWorkoutByName('Wadenheben'),
@@ -154,7 +154,7 @@ export class GenerateTrainingComponent implements OnInit {
     const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
     const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
     this.days.push(push, pull, legs);
-    this.presentSuccessToast('3er Split für Beginner');
+    await this.presentSuccessToast('3er Split für Beginner');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('3er Split Beginner', this.days));
   }
 
@@ -169,7 +169,7 @@ export class GenerateTrainingComponent implements OnInit {
     ];
     const newDay = DataFactory.createTrainingDay('Ganzkörpertraining Fortgeschritten', generatedWorkouts);
     this.days.push(newDay);
-    this.presentSuccessToast('Ganzkörpertraining Fortgeschritten');
+    await this.presentSuccessToast('Ganzkörpertraining Fortgeschritten');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('Ganzkörpertraining Fortgeschritten', this.days));
   }
 
@@ -194,7 +194,7 @@ export class GenerateTrainingComponent implements OnInit {
     const upperBody = DataFactory.createTrainingDay('Oberkörper', upperBodyWorkouts);
     const lowerBody = DataFactory.createTrainingDay('Unterkörper', lowerBodyWorkouts);
     this.days.push(upperBody, lowerBody);
-    this.presentSuccessToast('2er Split Fortgeschritten');
+    await this.presentSuccessToast('2er Split Fortgeschritten');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('2er Split Fortgeschritten', this.days));
   }
 
@@ -215,7 +215,7 @@ export class GenerateTrainingComponent implements OnInit {
       this.findWorkoutByName('Latzugmaschine'),
       this.findWorkoutByName('Bizepscurls SZ-Stange'),
       this.findWorkoutByName('Bizepscurls Kurzhantel')
-    ]
+    ];
 
     let legsWorkouts: Workout[] = [
       this.findWorkoutByName('Wadenheben'),
@@ -230,7 +230,7 @@ export class GenerateTrainingComponent implements OnInit {
     const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
     const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
     this.days.push(push, pull, legs);
-    this.presentSuccessToast('3er Split Fortgeschritten');
+    await this.presentSuccessToast('3er Split Fortgeschritten');
     await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('3er Split Fortgeschritten', this.days));
   }
 

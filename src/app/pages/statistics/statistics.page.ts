@@ -9,6 +9,7 @@ import {DataService} from '../../services/data.service';
 })
 export class StatisticsPage implements OnInit {
 
+  
   constructor(private dataService: DataService) { }
 
   ngOnInit() {

@@ -46,6 +46,19 @@ export class DataService {
   public get Workouts(): Workout[] {
     return [...this._workouts];
   }
+  public get WorkoutsOfUser(): Workout[] {
+    if(!this.LoggedIn || this.User == null) {
+      return [];
+    }
+    return this.Workouts.filter(
+      w => this.User.trainings.find(
+        t => t.days.find(
+          td => td.workouts.find(
+            tdw => tdw.id == w.id)
+            != null)
+          != null )
+        != null );
+  }
   
 
   constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController) {

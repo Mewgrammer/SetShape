@@ -25,7 +25,7 @@
             <ion-col>Anzahl abgeschlossener Übungen</ion-col>
             <ion-col>{{getCompletedWorkoutCount()}}</ion-col>
           </ion-row>
-          <ion-card color="dark" *ngFor="let workout of dataService.Workouts">
+          <ion-card color="dark" *ngFor="let workout of dataService.WorkoutsOfUser">
             <ion-card-header color="dark">
               <ion-card-title>{{workout.name}}</ion-card-title>
             </ion-card-header>

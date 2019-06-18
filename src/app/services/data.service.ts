@@ -39,7 +39,6 @@ export class DataService {
   public get TrainingPlans() {
     return [...this.User.trainings];
   }
-
   public get CurrentTrainingPlan() {
     return this.User.currentTrainingPlan;
   }

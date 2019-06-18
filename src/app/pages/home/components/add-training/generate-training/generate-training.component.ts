@@ -13,13 +13,14 @@ import {DataFactory} from '../../../../../resources/factory';
 export class GenerateTrainingComponent implements OnInit {
 
   public name : string = "";
-  public countDays : string = "";
+  public countDays : number = 1;
   public days : TrainingDay[] = [];
   public selectedWorkouts: Workout[];
   public generatedWorkouts: Workout[];
   public dayName: string;
   public selectedGoal: string;
   public selectedExperience: string;
+  isExperienced: boolean;
   
   public get Workouts() {
     return this._dataService.Workouts;
@@ -33,9 +34,11 @@ export class GenerateTrainingComponent implements OnInit {
   ngOnInit() {}
 
   async onCreateTraining() {
-    if(parseInt(this.countDays) < 1 || parseInt(this.countDays) > 7) {
-      this.presentWarningToast();
-    } else if(this.selectedExperience!=null && this.selectedGoal!=null){
+    console.log("IsExperienced" + this.isExperienced);
+    if(this.countDays < 1 || this.countDays > 7) {
+      await this.presentWarningToast();
+    }
+    else if(this.selectedGoal!=null){
       this.generateTraining();
       //await this._router.navigateByUrl("/change");
     }
@@ -50,20 +53,25 @@ export class GenerateTrainingComponent implements OnInit {
   }
 
   generateTraining() {
-    if(this.selectedExperience == "Nein") {
-      if(parseInt(this.countDays) < 4){
+    if (!this.isExperienced) {
+      if(this.countDays < 4){
         this.generateBeginnerGK();
-      }else if(parseInt(this.countDays) < 6){
+      }
+      else if(this.countDays < 6){
         this.generateBeginnerOKUK();
-      }else{
+      }
+      else {
         this.generateBeginnerPPB();
       }
-    } else {
-      if(parseInt(this.countDays) < 4){
+    }
+    else {
+      if (this.countDays < 4) {
         this.generateAdvancedGK();
-      }else if(parseInt(this.countDays) < 6){
+      }
+      else if (this.countDays < 6) {
         this.generateAdvancedOKUK();
-      }else{
+      }
+      else {
         this.generateAdvancedPPB();
       }
     }

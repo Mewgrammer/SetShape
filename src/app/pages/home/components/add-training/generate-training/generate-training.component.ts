@@ -40,7 +40,7 @@ export class GenerateTrainingComponent implements OnInit {
     }
     else if(this.selectedGoal!=null){
       this.generateTraining();
-      //await this._router.navigateByUrl("/change");
+      await this._router.navigateByUrl("/change");
     }
   }
 
@@ -50,6 +50,14 @@ export class GenerateTrainingComponent implements OnInit {
       duration: 2000
     });
     toast.present();
+  }
+
+  async presentSuccessToast(plan: string) {
+    const successToast = await this.toastController.create({
+      message: 'Dein neuer Trainingsplan lautet: ' + plan,
+      duration: 4000
+    });
+    successToast.present();
   }
 
   generateTraining() {
@@ -77,33 +85,153 @@ export class GenerateTrainingComponent implements OnInit {
     }
   }
 
-  generateBeginnerGK() {
+  async generateBeginnerGK() {
     let generatedWorkouts: Workout[] = [
-      this.findWorkoutByName('Butterfly')
+      this.findWorkoutByName('Beinstreckermaschine'),
+      this.findWorkoutByName('Rudermaschine'),
+      this.findWorkoutByName('Latzugmaschine'),
+      this.findWorkoutByName('Brustpresse'),
+      this.findWorkoutByName('Schulterpresse Maschine'),
+      this.findWorkoutByName('Beinpresse')
     ];
     const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', generatedWorkouts);
     this.days.push(newDay);
-    DataFactory.createTrainingPlan('Ganzkörpertraining', this.days);
+    this.presentSuccessToast('Ganzkörpertraining für Beginner');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('Ganzkörpertraining Beginner', this.days));
   }
 
-  generateBeginnerOKUK() {
-    
+  async generateBeginnerOKUK() {
+    let upperBodyWorkouts: Workout[] = [
+      this.findWorkoutByName('Brustpresse'),
+      this.findWorkoutByName('Butterfly'),
+      this.findWorkoutByName('Rudermaschine'),
+      this.findWorkoutByName('Latzugmaschine'),
+      this.findWorkoutByName('Bizepsmaschine'),
+      this.findWorkoutByName('Trizepsmaschine')
+    ];
+
+    let lowerBodyWorkouts: Workout[] = [
+      this.findWorkoutByName('Wadenheben'),
+      this.findWorkoutByName('Beinpresse'),
+      this.findWorkoutByName('Beinstreckermaschine'),
+      this.findWorkoutByName('Beinbeugermaschine'),
+      this.findWorkoutByName('Rückenstrecker'),
+    ];
+    const upperBody = DataFactory.createTrainingDay('Oberkörper', upperBodyWorkouts);
+    const lowerBody = DataFactory.createTrainingDay('Unterkörper', lowerBodyWorkouts);
+    this.days.push(upperBody, lowerBody);
+    this.presentSuccessToast('2er Split für Beginner');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('2er Split Beginner', this.days));
   }
 
-  generateBeginnerPPB() {
-    
+  async generateBeginnerPPB() {
+    let pushWorkouts: Workout[] = [
+      this.findWorkoutByName('Brustpresse'),
+      this.findWorkoutByName('Butterfly'),
+      this.findWorkoutByName('Trizepsmaschine'),
+      this.findWorkoutByName('Bauchmaschine'),
+      this.findWorkoutByName('Seithebemaschine'),
+      this.findWorkoutByName('Kurzhantel Schulterpresse')
+    ];
+
+    let pullWorkouts: Workout[] = [
+      this.findWorkoutByName('Rudermaschine'),
+      this.findWorkoutByName('Latzugmaschine'),
+      this.findWorkoutByName('Bizepsmaschine'),
+      this.findWorkoutByName('Rückenstrecker'),
+      this.findWorkoutByName('Bizepscurls SZ-Stange'),
+      this.findWorkoutByName('Klimmzüge')
+    ]
+
+    let legsWorkouts: Workout[] = [
+      this.findWorkoutByName('Wadenheben'),
+      this.findWorkoutByName('Beinpresse'),
+      this.findWorkoutByName('Beinstreckermaschine'),
+      this.findWorkoutByName('Beinbeugermaschine'),
+      this.findWorkoutByName('Rückenstrecker')
+    ];
+    const push = DataFactory.createTrainingDay('Oberkörper', pushWorkouts);
+    const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
+    const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
+    this.days.push(push, pull, legs);
+    this.presentSuccessToast('3er Split für Beginner');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('3er Split Beginner', this.days));
   }
 
-  generateAdvancedGK() {
-    
+  async generateAdvancedGK() {
+    let generatedWorkouts: Workout[] = [
+      this.findWorkoutByName('Langhantel Bankdrücken'),
+      this.findWorkoutByName('Squats'),
+      this.findWorkoutByName('Kreuzheben'),
+      this.findWorkoutByName('Klimmzüge'),
+      this.findWorkoutByName('Kurzhantel Schulterpresse'),
+      this.findWorkoutByName('Langhantelrudern')
+    ];
+    const newDay = DataFactory.createTrainingDay('Ganzkörpertraining Fortgeschritten', generatedWorkouts);
+    this.days.push(newDay);
+    this.presentSuccessToast('Ganzkörpertraining Fortgeschritten');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('Ganzkörpertraining Fortgeschritten', this.days));
   }
 
-  generateAdvancedOKUK() {
-    
+  async generateAdvancedOKUK() {
+    let upperBodyWorkouts: Workout[] = [
+      this.findWorkoutByName('Langhantel Bankdrücken'),
+      this.findWorkoutByName('Schrägbankdrücken'),
+      this.findWorkoutByName('Klimmzüge'),
+      this.findWorkoutByName('Kurzhantel Schulterpresse'),
+      this.findWorkoutByName('Langhantelrudern'),
+      this.findWorkoutByName('Bizepscurls Kurzhantel')
+    ];
+
+    let lowerBodyWorkouts: Workout[] = [
+      this.findWorkoutByName('Wadenheben'),
+      this.findWorkoutByName('Squats'),
+      this.findWorkoutByName('Kreuzheben'),
+      this.findWorkoutByName('Beinpresse'),
+      this.findWorkoutByName('Beinstreckermaschine'),
+      this.findWorkoutByName('Beinbeugermaschine')
+    ];
+    const upperBody = DataFactory.createTrainingDay('Oberkörper', upperBodyWorkouts);
+    const lowerBody = DataFactory.createTrainingDay('Unterkörper', lowerBodyWorkouts);
+    this.days.push(upperBody, lowerBody);
+    this.presentSuccessToast('2er Split Fortgeschritten');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('2er Split Fortgeschritten', this.days));
   }
 
-  generateAdvancedPPB() {
-    
+  async generateAdvancedPPB() {
+    let pushWorkouts: Workout[] = [
+      this.findWorkoutByName('Langhantel Bankdrücken'),
+      this.findWorkoutByName('Schrägbankdrücken'),
+      this.findWorkoutByName('Kurzhantel Schulterpresse'),
+      this.findWorkoutByName('Trizepsdips'),
+      this.findWorkoutByName('Trizepscurls'),
+      this.findWorkoutByName('Kurzhantel Seitheben')
+    ];
+
+    let pullWorkouts: Workout[] = [
+      this.findWorkoutByName('Langhantelrudern'),
+      this.findWorkoutByName('Klimmzüge'),
+      this.findWorkoutByName('Kreuzheben'),
+      this.findWorkoutByName('Latzugmaschine'),
+      this.findWorkoutByName('Bizepscurls SZ-Stange'),
+      this.findWorkoutByName('Bizepscurls Kurzhantel')
+    ]
+
+    let legsWorkouts: Workout[] = [
+      this.findWorkoutByName('Wadenheben'),
+      this.findWorkoutByName('Squats'),
+      this.findWorkoutByName('Kreuzheben'),
+      this.findWorkoutByName('Beinpresse'),
+      this.findWorkoutByName('Beinstreckermaschine'),
+      this.findWorkoutByName('Beinbeugermaschine'),
+      this.findWorkoutByName('Ausfallschritte')
+    ];
+    const push = DataFactory.createTrainingDay('Oberkörper', pushWorkouts);
+    const pull = DataFactory.createTrainingDay('Unterkörper', pullWorkouts);
+    const legs = DataFactory.createTrainingDay('Beine', legsWorkouts);
+    this.days.push(push, pull, legs);
+    this.presentSuccessToast('3er Split Fortgeschritten');
+    await this._dataService.createTrainingPlan(DataFactory.createTrainingPlan('3er Split Fortgeschritten', this.days));
   }
 
   findWorkoutByName(name: string): Workout {

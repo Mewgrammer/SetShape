@@ -37,9 +37,11 @@ export class DataService {
     this._currentDay = day;
   }
   public get TrainingPlans() {
+    if(this.User == null) return [];
     return [...this.User.trainings];
   }
   public get CurrentTrainingPlan() {
+    if(this.User == null) return null;
     return this.User.currentTrainingPlan;
   }
 

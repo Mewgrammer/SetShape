@@ -33,7 +33,7 @@ export class GenerateTrainingComponent implements OnInit {
   ngOnInit() {}
 
   async onCreateTraining() {
-    if(parseInt(this.countDays)<1||parseInt(this.countDays)>7) {
+    if(parseInt(this.countDays) < 1 || parseInt(this.countDays) > 7) {
       this.presentWarningToast();
     } else if(this.selectedExperience!=null && this.selectedGoal!=null){
       this.generateTraining();
@@ -50,22 +50,53 @@ export class GenerateTrainingComponent implements OnInit {
   }
 
   generateTraining() {
-    if(this.selectedExperience=="Nein") {
-      if(parseInt(this.countDays)<4){
-        console.log("Anfänger GK");
-      }else if(parseInt(this.countDays)<6){
-        console.log("Anfänger OK/UK")
+    if(this.selectedExperience == "Nein") {
+      if(parseInt(this.countDays) < 4){
+        this.generateBeginnerGK();
+      }else if(parseInt(this.countDays) < 6){
+        this.generateBeginnerOKUK();
       }else{
-        console.log("Anfänger PUSH/PULL/LEGS")
+        this.generateBeginnerPPB();
       }
     } else {
-      if(parseInt(this.countDays)<4){
-        console.log("Profi GK");
-      }else if(parseInt(this.countDays)<6){
-        console.log("Profi OK/UK")
+      if(parseInt(this.countDays) < 4){
+        this.generateAdvancedGK();
+      }else if(parseInt(this.countDays) < 6){
+        this.generateAdvancedOKUK();
       }else{
-        console.log("Profi PUSH/PULL/LEGS")
+        this.generateAdvancedPPB();
       }
     }
   }
+
+  generateBeginnerGK() {
+    let generatedWorkouts: Workout[] = [
+      //this.findWorkoutByName('Bizepscurls'), 
+      //this.findWorkoutByName('Bankdrücken')
+    ];
+    const newDay = DataFactory.createTrainingDay('Ganzkörpertraining', this.generatedWorkouts);
+    this.days.push(newDay);
+    DataFactory.createTrainingPlan('Ganzkörpertraining', this.days);
+  }
+
+  generateBeginnerOKUK() {
+    
+  }
+
+  generateBeginnerPPB() {
+    
+  }
+
+  generateAdvancedGK() {
+    
+  }
+
+  generateAdvancedOKUK() {
+    
+  }
+
+  generateAdvancedPPB() {
+    
+  }
+
 }

@@ -4,6 +4,8 @@ import {ApiService} from './api.service';
 import {Platform, ToastController} from '@ionic/angular';
 import {BehaviorSubject, Subject} from 'rxjs';
 import * as moment from 'moment';
+import { File } from '@ionic-native/file/ngx';
+import {json, path} from '@angular-devkit/core';
 
 
 @Injectable({
@@ -17,6 +19,7 @@ export class DataService {
   private _workouts: Workout[] = [];
   private _currentWorkout: Workout = null; // helper for Nav
   private _currentDay: TrainingDay = null; // helper for Nav
+  private _loginFileName = "loginData.json";
 
   public get User() {
     return this._user;
@@ -62,15 +65,19 @@ export class DataService {
         != null );
   }
   
+  private get LoginFileDirectory() {
+    return this.file.dataDirectory + "/setshape";
+  }
+  
 
-  constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController) {
+  constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController, private file: File) {
     this.onLogin = new BehaviorSubject<boolean>(false);
     this.onDataChanged = new Subject<User>();
     this.autoLogin();
   }
   
   public countDaysWithCompletedWorkout() {
-    if(!this.LoggedIn || this.User == null) return 0;
+    if(!this.LoggedIn) return 0;
     let uniqueDays: Date[] = [];
     this.User.trainings.forEach(training => {
       training.days.forEach(day => {
@@ -144,7 +151,7 @@ export class DataService {
       
     }
     if(this.LoggedIn) {
-      this.persistLoginData(username,password);
+     await this.persistLoginData(username, password);
       (await this._toaster.create({
         duration: 2000,
         message: "erfolgreich eingeloggt als '" + username + "'",
@@ -153,15 +160,60 @@ export class DataService {
     }
   }
   
-  private readPersistetLoginData() {
-    if(!this._plt.is("cordova")) {
-      return JSON.parse(localStorage.getItem("setshape_login"));
+  public async Logout() {
+    try {
+      if(!this._plt.is("cordova")) {
+        localStorage.removeItem("setshape_login");
+      }
+      else {
+        await this.file.checkDir(this.file.dataDirectory, 'setshape');
+        await this.file.removeFile(this.LoginFileDirectory, this._loginFileName);
+      }
     }
+    catch (e) {
+      console.warn("Error on Logout:", e);
+    }
+    this._user = null;
+    this.onLogin.next(false);
   }
   
-  private persistLoginData(username: string, password: string) {
+  private readPersistetLoginData() {
+    let loginData = null;
     if(!this._plt.is("cordova")) {
-      localStorage.setItem("setshape_login",JSON.stringify({username: username, password: password}));
+      loginData = JSON.parse(localStorage.getItem("setshape_login"));
+    }
+    else {
+      this.file.checkDir(this.file.dataDirectory, 'setshape')
+        .then(_ => console.log("setshape Directory exists"))
+        .catch(async (err) => {
+          console.log("Directory doesnt exist");
+          await this.file.createDir(this.file.dataDirectory, "setshape", true);
+        });
+      this.file.checkFile( this.LoginFileDirectory, this._loginFileName)
+        .then(async() => {
+          const jsonContent = await this.file.readAsText(this.LoginFileDirectory, this._loginFileName);
+          loginData = JSON.parse(jsonContent);
+        })
+        .catch(async (err) => {
+          console.log("loginData.json doesnt exist", err);
+        });
+    }
+    return loginData;
+  }
+  
+  private async persistLoginData(username: string, password: string) {
+    let jsonContent = JSON.stringify({username: username, password: password})
+    if(!this._plt.is("cordova")) {
+      localStorage.setItem("setshape_login", jsonContent);
+    }
+    else {
+      try {
+        await this.file.checkDir(this.file.dataDirectory, 'setshape');
+      }
+      catch (e) {
+        await this.file.createDir(this.file.dataDirectory, "setshape", true);
+      }
+      await this.file.writeFile(this.LoginFileDirectory, this._loginFileName, jsonContent, { replace: true});
     }
   }
   

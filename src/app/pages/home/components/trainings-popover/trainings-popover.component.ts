@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {PopoverController} from '@ionic/angular';
+import {DataService} from '../../../../services/data.service';
 
 @Component({
   selector: 'app-trainings-popover',
@@ -9,7 +10,7 @@ import {PopoverController} from '@ionic/angular';
 })
 export class TrainingsPopoverComponent implements OnInit {
 
-  constructor(private _router: Router, public _ctrl: PopoverController) { }
+  constructor(private _dataService: DataService, private _router: Router, public _ctrl: PopoverController) { }
 
   ngOnInit() {}
 
@@ -22,4 +23,9 @@ export class TrainingsPopoverComponent implements OnInit {
     await this._router.navigateByUrl(this._router.url + "/change");
     await this._ctrl.dismiss();
   }
+	
+	public async logout() {
+		await this._dataService.Logout();
+    await this._router.navigateByUrl("/");
+	}
 }

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref=""></ion-back-button>
+      <ion-back-button defaultHref="/training-day/{{_dataService.CurrentDay.id}}"></ion-back-button>
     </ion-buttons>
     <ion-title>
       {{workout.name}}
@@ -25,7 +25,7 @@
               </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.sets" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="sets" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning"  LongPressDirective [longPressTimeout]="100"  (pressStarted)="onDecrementSets()"  (pressing)="onDecrementSets()" (click)="onDecrementSets()">-</ion-button>
@@ -41,7 +41,7 @@
               </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.repetitions" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="repetitions" class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="OnDecrementRepetitions()"  (pressing)="OnDecrementRepetitions()" (click)="OnDecrementRepetitions()">-</ion-button>
@@ -57,7 +57,7 @@
               </span>
             </td>
             <td>
-              <ion-input [(ngModel)]="workout.weight"  class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
+              <ion-input [(ngModel)]="weight"  class="text-dark-contrast w-75 float-right" type="number" min="0"></ion-input>
             </td>
             <td>
               <ion-button size="large" color="warning" LongPressDirective [longPressTimeout]="100"  (pressStarted)="onDecrementWeight()"  (pressing)="onDecrementWeight()" (click)="onDecrementWeight()">-</ion-button>

@@ -34,9 +34,9 @@
           </ion-item>
           <ion-item color="dark">
             <ion-label position="stacked">Übungen</ion-label>
-            <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
-              <ion-select-option [value]="type" *ngFor="let type of WorkoutTypes">
-                {{WorkoutTypeEnum[type]}}
+            <ion-select multiple="true" (ionChange)="onWorkoutSelect()" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
+              <ion-select-option [value]="workout" *ngFor="let workout of Workouts">
+                {{workout.name}}
               </ion-select-option>
             </ion-select>
           </ion-item>

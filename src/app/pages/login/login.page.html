@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="dark" style="border-bottom: 1px solid yellow">
+    <ion-title>
+      Willkommen
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="dark">
+  <ion-card color="dark">
+    <ion-card-header>
+      <ion-card-title>
+        Einloggen
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content >
+      <ion-item color="dark">
+        <ion-label position="stacked">Username</ion-label>
+        <ion-input type="text" placeholder="Username"  [(ngModel)]="loginUser"></ion-input>
+      </ion-item>
+      <ion-item color="dark">
+        <ion-label position="stacked">Passwort</ion-label>
+        <ion-input type="password" placeholder="Passwort" [(ngModel)]="loginPassword"></ion-input>
+      </ion-item>
+      <ion-button color="warning" (click)="onLogin()">Einloggen</ion-button>
+    </ion-card-content>
+  </ion-card>
+  <ion-card color="dark">
+    <ion-card-header>
+      <ion-card-title>
+        Registrieren
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item color="dark">
+        <ion-label position="stacked">Username</ion-label>
+        <ion-input type="text" placeholder="Username" [(ngModel)]="registerUser"></ion-input>
+      </ion-item>
+      <ion-item color="dark">
+        <ion-label position="stacked">Passwort</ion-label>
+        <ion-input type="password" placeholder="Passwort" [(ngModel)]="registerPassword"></ion-input>
+      </ion-item>
+      <ion-button color="warning" (click)="onRegister()">Registrieren</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

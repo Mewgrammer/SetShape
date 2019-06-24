@@ -12,7 +12,7 @@ import {IonicGestureConfig} from '../../resources/GestureConfig';
 
 const routes: Routes = [
   {
-    path: ':type',
+    path: ':id',
     component: WorkoutPage
   }
 ];

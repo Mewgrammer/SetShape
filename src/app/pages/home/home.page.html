@@ -8,7 +8,7 @@
         {{TrainingPlan.name}}
       </span>
     </ion-title>
-    <ion-buttons slot="end" *ngIf="appReady && TrainingPlan != null">
+    <ion-buttons slot="end" *ngIf="TrainingPlan != null">
       <ion-button (click)="presentPopover($event)">
         <ion-icon slot="icon-only" name="more"></ion-icon>
       </ion-button>
@@ -16,19 +16,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="dark" *ngIf="!appReady">
-  <ion-card color="dark">
-    <ion-card-header color="dark">
-        <h5>Daten werden geladen...</h5>
-        <ion-spinner></ion-spinner>
-    </ion-card-header>
-    <ion-card-content>
-    </ion-card-content>
-  </ion-card>
-</ion-content>
-
-
-<ion-content color="dark" *ngIf="appReady && !TrainingPlan">
+<ion-content color="dark" *ngIf="!TrainingPlan">
   <ion-card color="dark">
     <ion-card-header color="dark">
       <ion-button size="large" color="warning" (click)="onChangeTraining()">Ein Training auswählen</ion-button>
@@ -38,13 +26,13 @@
   </ion-card>
 </ion-content>
 
-<ion-content class="TrainingDay" color="dark" *ngIf="appReady && TrainingPlan">
+<ion-content class="TrainingDay" color="dark" *ngIf="TrainingPlan && TrainingDays.length > 0">
   <div *ngFor="let day of TrainingDays">
-    <ion-card color="warning" (click)="onDayClick(day)">
-        <ion-card-header color="warning">
+    <ion-card [color]="getCardColor(day)" (click)="onDayClick(day)">
+        <ion-card-header [color]="getCardColor(day)">
           <ion-card-title>
             <ion-item-sliding>
-              <ion-item color="warning">
+              <ion-item [color]="getCardColor(day)">
                 <h5>
                   {{day.name}}
                 </h5>
@@ -61,12 +49,12 @@
   </div>
 </ion-content>
 
-<ion-content class="TrainingDay" color="dark" *ngIf="appReady && TrainingPlan && TrainingDays.length == 0">
+<ion-content class="TrainingDay" color="dark" *ngIf="TrainingPlan && TrainingDays.length == 0">
   <div>
-    <ion-card color="warning">
-      <ion-card-header color="warning">
+    <ion-card color="dark">
+      <ion-card-header color="dark">
         <ion-card-title>
-          <ion-button color="dark" (click)="onAddDayClick()"> Tag hinzufügen</ion-button>
+          <ion-button color="warning" (click)="onAddDayClick()"> Tag hinzufügen</ion-button>
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>

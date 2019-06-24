@@ -2,9 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {DataService} from '../../../../../services/data.service';
 import {PopoverController, ToastController} from '@ionic/angular';
-import {EWorkoutType, ITrainingDay, IWorkout} from '../../../../../resources/models/interfaces';
-import {TrainingDay, TrainingPlan, Workout} from '../../../../../resources/models/entities';
 import {DataFactory} from '../../../../../resources/factory';
+import {TrainingDay, Workout} from '../../../../../resources/ApiClient';
 
 @Component({
   selector: 'app-add-training-manual',
@@ -15,16 +14,13 @@ export class AddTrainingManualComponent implements OnInit {
 
   public name : string = "";
   public days : TrainingDay[] = [];
-  public selectedWorkouts: EWorkoutType[];
+  public selectedWorkouts: Workout[];
   public dayName: string;
-
-  public get WorkoutTypeEnum() {
-    return EWorkoutType;
+  
+  public get Workouts() {
+    return this._dataService.Workouts;
   }
-
-  public get WorkoutTypes() {
-    return Object.keys(EWorkoutType).filter(Number);
-  }
+  
   public get InputsValid() {
     return this.dayName != null && this.dayName.length > 0 && this.selectedWorkouts != null && this.selectedWorkouts.length > 0;
   }
@@ -46,18 +42,29 @@ export class AddTrainingManualComponent implements OnInit {
   }
 
   onAddDayClick() {
-    const workouts: Workout[] = this._dataService.Workouts.filter(w => this.selectedWorkouts.find(sw => <EWorkoutType>sw == w.type) != null);
-    const newDay = DataFactory.createTrainingDay(this.dayName, workouts);
+    const newDay = DataFactory.createTrainingDay(this.dayName, this.selectedWorkouts);
     console.log("New Day", newDay);
     this.days.push(newDay);
+    this.clearInputs();
+  }
+  
+  private clearInputs() {
+    this.dayName = "";
+    this.selectedWorkouts = [];
   }
 
   async onCreateTraining() {
     if(this.name && this.name.length > 0) {
       const newTrainingPlan = DataFactory.createTrainingPlan(this.name, this.days);
-      this._dataService.createTrainingPlan(newTrainingPlan);
+      await this._dataService.createTrainingPlan(newTrainingPlan);
       await this.presentToast();
-      await this._router.navigateByUrl("/change");
+      await this._router.navigateByUrl("/home/change");
+    }
+  }
+  
+  onWorkoutSelect() {
+    if(this.dayName != null && this.dayName.length > 0 && this.selectedWorkouts != null && this.selectedWorkouts.length > 0) {
+      this.onAddDayClick();
     }
   }
 }

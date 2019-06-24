@@ -9,7 +9,7 @@ import { WorkoutHistoryPage } from './workout-history.page';
 
 const routes: Routes = [
   {
-    path: ':type',
+    path: ':id',
     component: WorkoutHistoryPage
   }
 ];

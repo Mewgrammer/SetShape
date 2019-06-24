@@ -1,23 +1,32 @@
 import { Injectable } from '@angular/core';
-import {ITrainingDay, ITrainingPlan, IWorkout, IWorkoutHistoryItem} from '../resources/models/interfaces';
-import {TestData} from '../resources/testdata';
-import {DatabaseService} from './database.service';
-import {TrainingDay, TrainingPlan, Workout, WorkoutHistoryItem} from '../resources/models/entities';
-import {DataFactory} from '../resources/factory';
+import {HistoryItem, TrainingDay, TrainingPlan, User,  Workout} from '../resources/ApiClient';
+import {ApiService} from './api.service';
+import {Platform, ToastController} from '@ionic/angular';
+import {BehaviorSubject, Subject} from 'rxjs';
+import * as moment from 'moment';
+import { File } from '@ionic-native/file/ngx';
+import {json, path} from '@angular-devkit/core';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private _trainingPlans: TrainingPlan[] = [];
-  private _currentTrainingPlan: TrainingPlan = null;
-  private _workoutHistory: WorkoutHistoryItem[] = [];
+  public onLogin: BehaviorSubject<boolean>;
+  public onDataChanged: Subject<User>;
+  private _user: User;
   private _workouts: Workout[] = [];
-  private _currentWorkout: Workout = null;
-  private _currentDay: TrainingDay = null;
+  private _currentWorkout: Workout = null; // helper for Nav
+  private _currentDay: TrainingDay = null; // helper for Nav
+  private _loginFileName = "loginData.json";
 
-  
+  public get User() {
+    return this._user;
+  }
+  public get LoggedIn() {
+    return this._user != null && this.onLogin.value;
+  }
   public  get CurrentWorkout() {
     return this._currentWorkout;
   }
@@ -31,147 +40,320 @@ export class DataService {
     this._currentDay = day;
   }
   public get TrainingPlans() {
-    return [...this._trainingPlans];
+    if(this.User == null) return [];
+    return [...this.User.trainings];
   }
-
   public get CurrentTrainingPlan() {
-    return this._currentTrainingPlan == null ? null : {...this._currentTrainingPlan};
+    if(this.User == null) return null;
+    return this.User.currentTrainingPlan;
   }
 
-  public get Workouts() {
+  public get Workouts(): Workout[] {
     return [...this._workouts];
   }
-
-  public get WorkoutHistory() {
-    return [...this._workoutHistory];
+  public get WorkoutsOfUser(): Workout[] {
+    if(!this.LoggedIn || this.User == null) {
+      return [];
+    }
+    return this.Workouts.filter(
+      w => this.User.trainings.find(
+        t => t.days.find(
+          td => td.workouts.find(
+            tdw => tdw.id == w.id)
+            != null)
+          != null )
+        != null );
   }
-
-  constructor(private _databaseService: DatabaseService) {
-    this.loadData();
+  
+  private get LoginFileDirectory() {
+    return this.file.dataDirectory + "/setshape";
   }
+  
 
-  public loadTestData() {
-    this._trainingPlans = [TestData.plan];
-    this._currentTrainingPlan = this._trainingPlans[0];
-    this._workoutHistory = TestData.history;
-    this._workouts = TestData.workouts;
-
+  constructor(private _plt: Platform, private _apiService: ApiService, private _toaster: ToastController, private file: File) {
+    this.onLogin = new BehaviorSubject<boolean>(false);
+    this.onDataChanged = new Subject<User>();
+    this.autoLogin();
   }
-
-  public async loadData() {
-    console.log("DataService: Loading Data");
-    if(this._databaseService.dbReady.value) {
-      await this.syncWithDatabase();
-      console.log("Data Service ready");
+  
+  public countDaysWithCompletedWorkout() {
+    if(!this.LoggedIn) return 0;
+    let uniqueDays: Date[] = [];
+    this.User.trainings.forEach(training => {
+      training.days.forEach(day => {
+        day.history.forEach(historyItem => {
+          if(uniqueDays.find(d => d.getUTCFullYear() == historyItem.date.getUTCFullYear()
+            && d.getUTCMonth() == historyItem.date.getUTCMonth()
+            && d.getUTCDate() == historyItem.date.getUTCDate()) == null
+          ) {
+            uniqueDays.push(historyItem.date);
+          }
+        });
+      });
+    });
+    return uniqueDays.length;
+  }
+  
+  private async updateUserData() {
+    if (this._user != null) {
+      this._user = await this._apiService.getUserById(this._user.id);
+      console.log("UserData updated", this._user);
+      if (this.CurrentDay != null) {
+        const days = this._user.currentTrainingPlan.days;
+        this._currentDay = days.find(d => d.id == this.CurrentDay.id);
+        if (this.CurrentWorkout != null) {
+          const workouts = this._currentDay.workouts;
+          this._currentWorkout = workouts.find( w => w.id == this.CurrentWorkout.id);
+        }
+      }
+      this.onDataChanged.next(this.User);
     }
     else {
-      this._databaseService.dbReady.subscribe(async (status) => {
-        await this.syncWithDatabase();
-        console.log("Data Service ready");
+      console.log("failed to update UserData");
+    }
+  }
+  
+  public workoutOfDayIsFinished(workout: Workout, day: TrainingDay,) {
+    const workoutsInLastWeek = day.history.filter(w => w.workout.id == workout.id && w.date.getTime() > moment(new Date()).subtract(1, 'week').toDate().getTime());
+    return workoutsInLastWeek != null && workoutsInLastWeek.length > 0;
+  }
+  
+  public autoLogin() {
+    try {
+      this._plt.ready().then( async () => {
+        const loginData: {username: string, password: string} = this.readPersistetLoginData();
+        if(loginData == null) return;
+        await this.login(loginData.username, loginData.password);
+        console.log("Auto Login success !", this.User);
+      });
+    }
+    catch (e) {
+      console.log("Auto Login failed !");
+    }
+  }
+  
+  public async login(username: string, password: string) {
+    try {
+      console.log("Logging in", username);
+      this._user = await this._apiService.login(username, password);
+      this._workouts = await this._apiService.Workouts;
+      this.onLogin.next(true);
+      this.onDataChanged.next(this.User);
+    }
+    catch (e) {
+      console.warn("Login Failed", e);
+      this.onLogin.next(false);
+      (await this._toaster.create({
+        duration: 2000,
+        message: "Login fehlgeschlagen - " + e.message,
+        color: 'danger'
+      })).present();
+      
+    }
+    if(this.LoggedIn) {
+     await this.persistLoginData(username, password);
+      (await this._toaster.create({
+        duration: 2000,
+        message: "erfolgreich eingeloggt als '" + username + "'",
+        color: 'success'
+      })).present();
+    }
+  }
+  
+  public async Logout() {
+    try {
+      if(!this._plt.is("cordova")) {
+        localStorage.removeItem("setshape_login");
+      }
+      else {
+        await this.file.checkDir(this.file.dataDirectory, 'setshape');
+        await this.file.removeFile(this.LoginFileDirectory, this._loginFileName);
+      }
+    }
+    catch (e) {
+      console.warn("Error on Logout:", e);
+    }
+    this._user = null;
+    this.onLogin.next(false);
+  }
+  
+  private readPersistetLoginData() {
+    let loginData = null;
+    if(!this._plt.is("cordova")) {
+      loginData = JSON.parse(localStorage.getItem("setshape_login"));
+    }
+    else {
+      this.file.checkDir(this.file.dataDirectory, 'setshape')
+        .then(_ => console.log("setshape Directory exists"))
+        .catch(async (err) => {
+          console.log("Directory doesnt exist");
+          await this.file.createDir(this.file.dataDirectory, "setshape", true);
+        });
+      this.file.checkFile( this.LoginFileDirectory, this._loginFileName)
+        .then(async() => {
+          const jsonContent = await this.file.readAsText(this.LoginFileDirectory, this._loginFileName);
+          loginData = JSON.parse(jsonContent);
+        })
+        .catch(async (err) => {
+          console.log("loginData.json doesnt exist", err);
+        });
+    }
+    return loginData;
+  }
+  
+  private async persistLoginData(username: string, password: string) {
+    let jsonContent = JSON.stringify({username: username, password: password})
+    if(!this._plt.is("cordova")) {
+      localStorage.setItem("setshape_login", jsonContent);
+    }
+    else {
+      try {
+        await this.file.checkDir(this.file.dataDirectory, 'setshape');
+      }
+      catch (e) {
+        await this.file.createDir(this.file.dataDirectory, "setshape", true);
+      }
+      await this.file.writeFile(this.LoginFileDirectory, this._loginFileName, jsonContent, { replace: true});
+    }
+  }
+  
+  public async register(username: string, password: string) {
+    try {
+      console.log("registering", username);
+      await this._apiService.register(username, password);
+      (await this._toaster.create({
+        duration: 2000,
+        message: "erfolgreich registriert",
+        color: 'success'
+      })).present();
+      await this.login(username, password);
+    }
+    catch (e) {
+      (await this._toaster.create({
+        duration: 2000,
+        message: "registration fehlgeschlagen - " + e.message,
+        color: 'danger'
+      })).present();
+    }
+  }
+  
+  public async addDayToCurrentTrainingPlan(day: TrainingDay) {
+    try {
+      day.id = 0;
+      const newDay = await this._apiService.TrainingDayApi.postTrainingDay(day);
+      await this._apiService.addDayToTraining(this._user.currentTrainingPlan, newDay);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
       });
     }
   }
 
-  public async addDayToCurrentTrainingPlan(day: TrainingDay) {
-    this._currentTrainingPlan.days.push(day);
-    console.log("Adding Day:", day);
-    await this._databaseService.addTrainingDay(day);
-    // await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
-    await this.syncWithDatabase();
-  
-  }
-
   public async createTrainingPlan(plan: TrainingPlan) {
-    const addedPlan = await this._databaseService.addTrainingPlan(plan);
-    this._trainingPlans.push(addedPlan);
-    await this.syncWithDatabase();
-  
+    try{
+      await this._apiService.addTrainingPlanToUser(this.User.id, plan);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 
   public async changeTrainingPlan(plan: TrainingPlan) {
-    console.log("Changing Active Trainingplan:", plan);
-    if(this._currentTrainingPlan != null) {
-      this._currentTrainingPlan.active = false;
-      await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
+    try {
+      console.log("change TrainingPlan", plan);
+      await this._apiService.setActiveTrainingPlanOfUser(this.User.id, plan);
+      await this.updateUserData();
     }
-    plan.active = true;
-    await this._databaseService.updateTrainingPlan(plan);
-    this._currentTrainingPlan = {...plan};
-    await this.syncWithDatabase();
-    console.log("Current Trainingplan Changed", this._currentTrainingPlan);
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 
   public async removeTrainingPlan(plan: TrainingPlan) {
-    const matchingPlan = this._trainingPlans.find(p => p.id == plan.id);
-    if(matchingPlan != null) {
-      const deleteResult = await this._databaseService.deleteTrainingPlan(plan);
-      this._trainingPlans.splice(this._trainingPlans.indexOf(matchingPlan), 1);
-      console.log("Removed Training", matchingPlan, this._trainingPlans);
-      if(this._currentTrainingPlan.id == plan.id) {
-        this._currentTrainingPlan = null;
-      }
-      await this.syncWithDatabase();
-  
+    try {
+      await this._apiService.removeTrainingPlanFromUser(this.User.id, plan);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
 
   public async removeTrainingDay(day: TrainingDay) {
-    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
-    if(matchingDay != null) {
-      const deleteResult = await this._databaseService.deleteTrainingDay(day);
-      this._currentTrainingPlan.days.splice(this._currentTrainingPlan.days.indexOf(matchingDay), 1);
-      console.log("Removed TrainingDay", matchingDay, this._currentTrainingPlan.days);
-      await this.syncWithDatabase();
-  
+    try {
+      await this._apiService.removeDayFromTraining(this._user.currentTrainingPlan.id, day);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
-
-  public async removeHistoryItem(item: WorkoutHistoryItem) {
-    const match = this._workoutHistory.find(i => i.id == item.id);
-    if(match != null) {
-      const deleteResult = await this._databaseService.deleteHistoryItem(item);
-      this._workoutHistory.splice(this._workoutHistory.indexOf(match), 1);
-      console.log("Removed HistoryItem", match, this._workoutHistory);
-      await this.syncWithDatabase();
   
+  public async addWorkoutToDay(workout: Workout, day: TrainingDay) {
+    try {
+      await this._apiService.addWorkoutToDay(day.id, workout);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
-
+  
   public async removeWorkoutFromDay(workout: Workout, day: TrainingDay) {
-    const matchingDay = this._currentTrainingPlan.days.find(d => d.id == day.id);
-    if(matchingDay != null) {
-      const dayIndex = this._currentTrainingPlan.days.indexOf(matchingDay);
-      const matchingWorkout = this._currentTrainingPlan.days[dayIndex].workouts.find(w => w.id == workout.id);
-      if(matchingWorkout != null) {
-        const workoutIndex =  this._currentTrainingPlan.days[dayIndex].workouts.indexOf(matchingWorkout);
-        this._currentTrainingPlan.days[dayIndex].workouts.splice(workoutIndex, 1);
-        const updateResult = await this._databaseService.updateTrainingPlan(this._currentTrainingPlan);
-        console.log("Removed Workout", workout,  this._currentTrainingPlan.days[dayIndex].workouts);
-        await this.syncWithDatabase();
-  
-      }
+    try {
+      await this._apiService.removeWorkoutFromDay(day.id, workout);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
     }
   }
 
-  public async addHistoryItem(workout: Workout) {
-    const addedItem = await this._databaseService.addHistoryItem(DataFactory.createWorkoutHistoryItem(workout));
-    this._workoutHistory.push(addedItem);
-    await this.syncWithDatabase();
+  public async removeHistoryItemFromDay(day: TrainingDay, item: HistoryItem) {
+    try {
+      await this._apiService.removeHistoryItemFromDay(day.id, item);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
   
-  public async syncWithDatabase() {
-    this._trainingPlans = await this._databaseService.TrainingPlans;
-    this._currentTrainingPlan = await this._databaseService.ActivePlan;
-    this._workoutHistory = await this._databaseService.History;
-    this._workouts = await this._databaseService.Workouts;
-    
-    console.log("Sync DB Data");
-  
-    console.log("Workouts", this._workouts);
-    console.log("Current Plan", this._currentTrainingPlan);
-    console.log("Plans", this._trainingPlans);
-    console.log("History", this._workoutHistory);
-  
-  
+  public async addHistoryItemToDay(day: TrainingDay, item: HistoryItem) {
+    try {
+      await this._apiService.addHistoryItemToDay(day.id, item);
+      await this.updateUserData();
+    }
+    catch (e) {
+      await this._toaster.create({
+        message: "Fehler: " + e.message,
+        color: 'danger'
+      });
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import {DataService} from '../../../../services/data.service';
-import {TrainingPlan} from '../../../../resources/models/entities';
+import {TrainingPlan} from '../../../../resources/ApiClient';
 
 @Component({
   selector: 'app-change-training',
@@ -21,14 +21,14 @@ export class ChangeTrainingComponent implements OnInit {
 
   async onSelectTraining(training: TrainingPlan) {
     await this._dataService.changeTrainingPlan(training);
-    await this._router.navigateByUrl("/");
+    await this._router.navigateByUrl("/home");
   }
 
   async onCreateNewTraining() {
-    await this._router.navigateByUrl("/create");
+    await this._router.navigateByUrl("/home/create");
   }
 
-  removeTraining(training: TrainingPlan) {
-    this._dataService.removeTrainingPlan(training);
+  async removeTraining(training: TrainingPlan) {
+    await this._dataService.removeTrainingPlan(training);
   }
 }

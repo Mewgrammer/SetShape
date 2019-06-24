@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {ActivatedRoute} from '@angular/router';
-import {EWorkoutType, IWorkoutHistoryItem} from '../../resources/models/interfaces';
-import {WorkoutHistoryItem} from '../../resources/models/entities';
+import {HistoryItem, Workout} from '../../resources/ApiClient';
 
 @Component({
   selector: 'app-workout-history',
@@ -11,31 +10,32 @@ import {WorkoutHistoryItem} from '../../resources/models/entities';
 })
 export class WorkoutHistoryPage implements OnInit {
 
-  private workoutType: EWorkoutType;
+  public workout: Workout;
 
   public get History() {
-    return this._dataService.WorkoutHistory.filter(w => w.workout.type == this.workoutType)
+    if(this._dataService.CurrentDay == null) return [];
+    return this._dataService.CurrentDay.history;
   }
 
-  constructor(private _dataService: DataService, private route: ActivatedRoute) {
+  constructor(public _dataService: DataService, private route: ActivatedRoute) {
 
   }
 
   ngOnInit() {
     try{
-      this.workoutType = <EWorkoutType>parseInt(this.route.snapshot.paramMap.get('type'));
+      const workoutId = parseInt(this.route.snapshot.paramMap.get('id'));
+      this.workout = this._dataService.Workouts.find(w => w.id == workoutId);
     }
     catch (e) {
       console.error(e);
     }
   }
-
-
+  
   presentPopover($event: MouseEvent) {
     
   }
 
-  removeItem(item: WorkoutHistoryItem) {
-    this._dataService.removeHistoryItem(item);
+  async removeItem(item: HistoryItem) {
+    await this._dataService.removeHistoryItemFromDay(this._dataService.CurrentDay, item);
   }
 }

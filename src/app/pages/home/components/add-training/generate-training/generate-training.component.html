@@ -18,22 +18,40 @@
     </ion-card-header>
     <ion-card-content style="font-size: 18px;">
       <ion-item color="dark">
-        <ion-label position="stacked">Name</ion-label>
-        <ion-input type="text" [(ngModel)]="name"></ion-input>
+        <ion-label position="stacked">Wie viel Tage/Woche möchtest du Sport machen?</ion-label>
+        <ion-input type="number" placeholder="Anzahl Tage" [(ngModel)]="countDays"></ion-input>
       </ion-item>
       <ion-item color="dark">
-        <ion-label position="stacked">Anzahl Tage</ion-label>
-        <ion-input type="text" [(ngModel)]="countDays"></ion-input>
+        <ion-list color="dark" class="bg-ionic-dark">
+          <ion-radio-group color="dark" [(ngModel)]="isExperienced">
+            <ion-list-header color="dark">
+              <ion-label>Hast du sportliche Erfahrungen?</ion-label>
+            </ion-list-header>
+
+            <ion-item color="dark">
+              <ion-label>Ja</ion-label>
+              <ion-radio slot="start" color="warning" [value]="true" [checked]="isExperienced"></ion-radio>
+            </ion-item>
+
+            <ion-item color="dark">
+              <ion-label>Nein</ion-label>
+              <ion-radio slot="start" color="warning" [value]="false" [checked]="!isExperienced"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
       </ion-item>
       <ion-item color="dark">
-        <ion-label position="stacked">Erfahrung</ion-label>
-        <ion-select multiple="true" [(ngModel)]="selectedWorkouts" class="w-100 bg-ionic-dark text-dark-contrast">
-          <ion-select-option [value]="type" *ngFor="let type of WorkoutTypes">
-            {{WorkoutTypeEnum[type]}}
-          </ion-select-option>
+        <ion-label position="stacked">Welche Ziele hast du?</ion-label>
+        <ion-select [(ngModel)]="selectedGoal" placeholder="Wähle ein Trainingsziel" class="w-100 bg-ionic-dark text-dark-contrast">
+          <ion-select-option>Gesundheit</ion-select-option>
+          <ion-select-option>Muskelaufbau</ion-select-option>
+          <ion-select-option>Ausdauer</ion-select-option>
+          <ion-select-option>Gewichtsverlust</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-button size="large" color="warning" (click)="onCreateTraining()">Training Generieren</ion-button>
+      <ion-item color="dark" class="mt-2">
+        <ion-button size="large" color="warning" (click)="onCreateTraining()">Training generieren</ion-button>
+      </ion-item>
     </ion-card-content>
   </ion-card>
 </ion-content>

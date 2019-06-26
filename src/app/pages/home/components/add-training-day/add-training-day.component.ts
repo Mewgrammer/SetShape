@@ -30,6 +30,6 @@ export class AddTrainingDayComponent implements OnInit {
   async onAddDayClick() {
     let newDay = DataFactory.createTrainingDay(this.name, this.selectedWorkouts);
     await this._dataService.addDayToCurrentTrainingPlan(newDay);
-    await this.router.navigateByUrl("/");
+    await this.router.navigateByUrl("/home");
   }
 }
